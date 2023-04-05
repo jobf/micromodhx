@@ -1,0 +1,12 @@
+-lib ammer
+-D ammer.buildPath=tmp/build
+-D ammer.outputPath=bin/hl
+
+# ammer bindings source
+-cp ../src 
+
+# test source
+-cp .
+
+--main Main
+-hl bin/hl/out.hl
