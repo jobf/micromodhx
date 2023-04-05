@@ -20,7 +20,7 @@ cd test
 haxe build-hl.hxml
 ```
 
-Run
+Run (linux)
 
 ```
 export LD_LIBRARY_PATH=/home/jf/code/haxe/ammer/micromodhx/test/bin/hl
