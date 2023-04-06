@@ -5,7 +5,7 @@ import ammer.ffi.*;
 @:ammer.lib.includePath("../../../native/micromod/micromod-c")
 @:ammer.lib.headers.includeLocal("micromod.h")
 @:ammer.nativePrefix("micromod_")
-class Micromod extends ammer.def.Library<"micromodhx"> {
+class Micromod extends ammer.def.Library<"micromod"> {
 	/**
 		Calculate the length in bytes of a module file given the 1084-byte header.
 		Returns -1 if the data is not recognised as a module.
