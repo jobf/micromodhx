@@ -20,7 +20,7 @@ class Micromod extends ammer.def.Library<"micromod"> {
 		Returns -1 if the data is not recognised as a module.
 		Returns -2 if the sampling rate is less than 8000hz.
 	**/
-	// public static function micromod_initialise(data:String, sampling_rate:Int):Int;
+	public static function initialise(module:Bytes, sampling_rate:Int):Int;
 
 	/**
 		Returns the total song duration in samples at the current sampling rate.
