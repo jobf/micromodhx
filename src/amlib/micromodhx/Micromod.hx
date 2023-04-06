@@ -22,6 +22,14 @@ class Micromod extends ammer.def.Library<"micromod"> {
 	**/
 	public static function initialise(module:Bytes, sampling_rate:Int):Int;
 
+	/*
+		Obtains song and instrument names from the module.
+		The song name is returned as instrument 0.
+		The name is copied into the location pointed to by string,
+		and is at most 23 characters long, including the trailing null.
+	*/
+	public static function get_string(instrument:Int, string:Bytes):Void;
+
 	/**
 		Returns the total song duration in samples at the current sampling rate.
 	**/

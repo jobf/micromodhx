@@ -28,6 +28,7 @@ class Main{
 			var oversample = 2;
 			var initilize_error = Micromod.initialise(module_portable, sample_frequency * oversample);
 			if(initilize_error == 0){
+				print_module_info();
 				// play the module
 				trace('playing!');
 			}
@@ -48,5 +49,20 @@ class Main{
 		var header_portable = ammer.ffi.Bytes.fromHaxeCopy(header);
 		var length = Micromod.calculate_mod_file_len(header_portable);
 		return length;
+	}
+
+	static function print_module_info():Void{
+		var string_portable = ammer.ffi.Bytes.zalloc(23);
+		for(inst in 0...16){
+
+			Micromod.get_string(inst, string_portable);
+			var string = string_portable.toHaxeCopy(23);
+			trace(string);
+
+			Micromod.get_string(inst + 16, string_portable);
+			var string = string_portable.toHaxeCopy(23);
+			trace(string);
+			
+		}
 	}
 }
