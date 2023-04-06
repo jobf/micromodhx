@@ -29,6 +29,11 @@ class Main{
 			var initilize_error = Micromod.initialise(module_portable, sample_frequency * oversample);
 			if(initilize_error == 0){
 				print_module_info();
+
+				var samples_remaining = Micromod.calculate_song_duration();
+				var seconds = samples_remaining / ( sample_frequency * oversample );
+				trace('Song duration $seconds seconds');
+
 				// play the module
 				trace('playing!');
 			}

@@ -33,7 +33,7 @@ class Micromod extends ammer.def.Library<"micromod"> {
 	/**
 		Returns the total song duration in samples at the current sampling rate.
 	**/
-	// public static function micromod_calculate_song_duration():Int;
+	public static function calculate_song_duration():Int;
 
 	/**
 		Jump directly to a specific pattern in the sequence.
