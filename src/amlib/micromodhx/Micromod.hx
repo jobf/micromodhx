@@ -3,8 +3,6 @@ package amlib.micromodhx;
 import ammer.ffi.*;
 
 @:ammer.lib.includePath("../../../native/micromod/micromod-c")
-@:ammer.lib.define("MICROMOD_IMPLEMENTATION")
-@:ammer.lib.linkNames([])
 @:ammer.lib.headers.includeLocal("micromod.h")
 @:ammer.nativePrefix("micromod_")
 class Micromod extends ammer.def.Library<"micromodhx"> {
