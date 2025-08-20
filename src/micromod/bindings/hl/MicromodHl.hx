@@ -1,29 +1,20 @@
 package micromod.bindings.hl;
 
-@:hlNative("micromodHl") class C {
-	public static function get_version():hl.Bytes {
-		return null;
-	}
+@:hlNative("micromodHl") extern class C {
+	static function get_version():hl.Bytes;
 
-	public static function calculate_mod_file_len(module_header:hl.Bytes):Int {
-		return 0;
-	}
+	static function calculate_mod_file_len(module_header:hl.Bytes):Int;
 
-	public static function initialise(data:hl.Bytes, sampling_rate:Int):Int {
-		return 0;
-	}
+	static function initialise(data:hl.Bytes, sampling_rate:Int):Int;
 
-	public static function get_string(instrument:Int, string:hl.Bytes):Void {}
+	static function get_string(instrument:Int, string:hl.Bytes):Void;
 
-	public static function calculate_song_duration():Int {
-		return 0;
-	}
+	static function calculate_song_duration():Int;
 
-	public static function get_audio(output_buffer:hl.Bytes, sample_count:Int) {}
+	static function get_audio(output_buffer:hl.Bytes, sample_count:Int):Void;
 }
 
 class MicromodHl {
-	
 	public static function get_version():String {
 		var string = C.get_version();
 		@:privateAccess
@@ -50,7 +41,6 @@ class MicromodHl {
 	}
 
 	public static function get_audio(output_buffer:haxe.io.Bytes, sample_count:Int) {
-		return C.get_audio(output_buffer, sample_count);
+		C.get_audio(output_buffer, sample_count);
 	}
-
 }
