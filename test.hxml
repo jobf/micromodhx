@@ -1,0 +1,27 @@
+# make output path if it doesn't exist
+--cmd mkdir -p bin/hl
+
+# compile hdll
+--cmd haxelib run hxcpp buildHdll.xml
+
+# copy hdll
+--cmd cp hdll/bin/*.hdll bin/hl
+
+# include the source
+--class-path src
+
+# include the test source
+--class-path test
+
+# define entry point
+--main Main
+
+# haxelibs
+
+--library format
+
+# build hashlink to output path
+--hl bin/hl/main.hl
+
+# enter output path and run the vm
+--cmd (cd bin/hl && hl main.hl "../../external/micromod/songs/Origin.mod")

@@ -1,0 +1,3 @@
+[submodule "external/micromod"]
+	path = external/micromod
+	url = https://github.com/martincameron/micromod.git

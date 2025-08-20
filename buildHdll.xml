@@ -1,0 +1,27 @@
+<xml>
+
+	<set name="ROOT" value="${this_dir}" />
+	<set name="MICROMODC" value="external/micromod/micromod-c" />
+	
+	<set name="HL_INCLUDE" value="/usr/include" if="linux" />
+	<set name="HL_BIN" value="/usr/bin" if="linux" />
+
+   <echo value="hashlink include: ${HL_INCLUDE}" />
+   <echo value="hashlink bin: ${HL_BIN}" />
+	
+	<files id="micromodHl">
+		<compilerflag value="-I${HL_INCLUDE}" />
+		<compilerflag value="-I${ROOT}/${MICROMODC}" />
+		<file name="${ROOT}/${MICROMODC}/micromod.c" />
+		<file name="${ROOT}/hdll/micromodHl.c" />
+		<objdir value="${ROOT}/hdll/obj" />
+	</files>
+
+	<target id="default" output="micromodHl" toolid="dll" tool="linker">
+		<files id="micromodHl" />
+		<lib name="-lhl" if="linux" />
+		<ext value=".hdll" />
+		<outdir name="${ROOT}/hdll/bin" />
+	</target>
+
+</xml>
