@@ -1,0 +1,26 @@
+# make output path if it doesn't exist
+--cmd mkdir -p bin/js
+
+# copy js dependency
+--cmd cp external/micromod/micromod-js/*.js bin/js
+
+# include the source
+--class-path src
+
+# include the test source
+--class-path test-js
+
+# define entry point
+--main Main
+
+# haxelibs
+--library format
+
+# build javascript 
+--js bin/js/main.js
+
+# copy html
+--cmd cp test-js/*.html bin/js
+
+# enter output path and serve the folder
+--cmd (cd bin/js && python -m http.server 8123)

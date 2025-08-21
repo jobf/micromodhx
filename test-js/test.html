@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Micromod for JavaScript</title>
+	</head>
+	<body>
+	
+		<script type="text/javascript" src="AudioPlayer.js"></script>
+		<script type="text/javascript" src="Micromod.js"></script>
+		<script type="text/javascript" src="main.js"></script>
+	
+		<p>
+			<h3>Micromod for JavaScript!</h3>
+		</p>
+		<p>
+			Please direct any comments, questions, complaints :) to mumart@gmail.com
+		</p>
+		<p>
+			<div id="songName">No song loaded.</div>
+		</p>
+		<p>
+			<input type="file" id="input" onchange="TestPlayer.init( this.files[ 0 ] )"></input>
+			<button onclick="TestPlayer.play()">Play</button>
+			<button onclick="TestPlayer.stop()">Stop</button>
+		</p>
+	</body>
+</html>
