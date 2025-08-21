@@ -22,5 +22,8 @@
 # copy html
 --cmd cp test-js/*.html bin/js
 
+# copy a test module
+--cmd cp external/micromod/songs/Origin.mod bin/js/test.mod
+
 # enter output path and serve the folder
 --cmd (cd bin/js && python -m http.server 8123)
