@@ -1,5 +1,3 @@
-import sys.io.File;
-import format.wav.Writer;
 import haxe.io.Bytes;
 import format.wav.Data.WAVE;
 
@@ -18,9 +16,11 @@ function from_bytes(data:Bytes, samplingRate:Int, num_channels:Int, bitsPerSampl
 	};
 }
 
+#if sys
 function write_to_disk(wave:WAVE, path:String) {
-	var file = File.write(path);
-	var w = new Writer(file);
+	var file = sys.io.File.write(path);
+	var w = new format.wav.Writer(file);
 	w.write(wave);
 	file.close();
 }
+#end
