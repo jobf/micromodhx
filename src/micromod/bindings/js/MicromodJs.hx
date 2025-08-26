@@ -5,6 +5,7 @@ import js.lib.Float32Array;
 @:native("Module") extern class Module {
 	function new(data:js.lib.Int8Array):Void;
 	var songName(default, null):String;
+	var gain:Float;
 	var instruments(default, null):Array<Instrument>;
 }
 
@@ -26,33 +27,47 @@ import js.lib.Float32Array;
 	function getAudio(leftBuf:Float32Array, rightBuf:Float32Array, count:Int):Void;
 }
 
+@:publicFields
 class MicromodJs {
-	static var micromod:Micromod;
-	static var module:Module;
+	private static var micromod:Micromod;
+	private static var module:Module;
 	
-	public static function calculate_mod_file_len(header:haxe.io.Bytes):Int {
+	static function calculate_mod_file_len(header:haxe.io.Bytes):Int {
 		// to do 
 		return 0;
 	}
 
-	public static function initialise(data:js.lib.Int8Array, sampling_rate:Int) {
+	static function initialise(data:js.lib.Int8Array, sampling_rate:Int) {
+		trace(data);
 		module = new Module(data);
 		micromod = new Micromod(module, sampling_rate);
 	}
 
-	public static function get_string(instrument:Int):String {
+	static function get_string(instrument:Int):String {
 		return module.instruments[instrument].instrumentName;
 	}
 
-	public static function calculate_song_duration():Int {
+	static function calculate_song_duration():Int {
 		return micromod.calculateSongDuration();
 	}
 
-	public static function get_audio(output_buffer:haxe.io.Bytes, sample_count:Int) {
+	static function get_audio(output_buffer:haxe.io.Bytes, sample_count:Int) {
 		// to do
 	}
 
-	public static function get_version():String {
+	static function get_version():String {
 		return micromod.getVersion();
+	}
+
+	static function set_position(pos:Int) {
+		micromod.setSequencePos(pos);
+	}
+
+	static function get_name():String{
+		return module.songName;
+	}
+
+	static function set_mod_gain(v:Float){
+		module.gain = v;
 	}
 }

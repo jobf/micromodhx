@@ -9,11 +9,17 @@ typedef ModuleFormat = haxe.io.Bytes;
 
 #if js
 import micromod.bindings.js.MicromodJs as MicromodHx;
-import micromod.bindings.js.AudioPlayer;
 typedef ModuleFormat = js.lib.Int8Array;
 #end
 
+#if cpp
+import micromod.bindings.hxcpp.MicromodHxcpp as MicromodHx;
+typedef ModuleFormat = haxe.io.Bytes;
+#end
+
 class Micromod {
+	public static var isInitialised:Bool = false;
+	
 	#if sys
 	static function read_file(path:String, to:Bytes, length:Int):Int {
 		var count = -1;
@@ -60,12 +66,19 @@ class Micromod {
 	public static function get_audio(player:AudioPlayer){
 		@:privateAccess
 		player.setAudioSource(MicromodHx.micromod);
-		player.play();
 	}
 	#end
 
-	public static function initialise(module_data:ModuleFormat, length:Int) {
-		return MicromodHx.initialise(module_data, length);
+	public static function initialise(module_data:ModuleFormat, sample_rate:Int) {
+		#if sys
+		MicromodHx.initialise();
+		#end
+
+		#if html5
+		MicromodHx.initialise(module_data, sample_rate);
+		#end
+
+		isInitialised = true;
 	}
 
 	public static function get_string(instrument:Int) {
@@ -76,9 +89,19 @@ class Micromod {
 		return MicromodHx.calculate_song_duration();
 	}
 
-
-
 	public static function get_version():String {
 		return MicromodHx.get_version();
+	}
+
+	public static function set_position(pos:Int) {
+		MicromodHx.set_position(pos);
+	}
+
+	public static function get_name():String {
+		return MicromodHx.get_name();
+	}
+
+	public static function setGain(v:Float) {
+		MicromodHx.set_mod_gain(v);
 	}
 }
