@@ -9,9 +9,9 @@ import js.lib.Int8Array;
 class TestPlayer {
 	static var player:AudioPlayer;
 
-	public static function init(f) {
-		trace(f);
-
+	public static function init(filelist) {
+		trace(filelist);
+		var f = filelist[0];
 		var reader = new FileReader();
 
 		reader.onloadend = event -> {
