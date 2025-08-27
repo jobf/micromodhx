@@ -1,5 +1,3 @@
-var code = '
-
 class AudioStreamProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
@@ -21,14 +19,14 @@ class AudioStreamProcessor extends AudioWorkletProcessor {
     
     // route messages sent from main thread
     this.port.onmessage = (event) => {
-      if (event.data.type === \'audioData\') {
+      if (event.data.type === 'audioData') {
         // queue audio samples
         this.leftBufferQueue.push(event.data.leftBuffer);
         this.rightBufferQueue.push(event.data.rightBuffer);
-      } else if (event.data.type === \'start\') {
+      } else if (event.data.type === 'start') {
         this.isPlaying = true;
-        this.port.postMessage({ type: \'dataRequest\' });
-      } else if (event.data.type === \'stop\') {
+        this.port.postMessage({ type: 'dataRequest' });
+      } else if (event.data.type === 'stop') {
         this.isPlaying = false;
         // reset buffers
         this.leftBufferQueue = [];
@@ -37,13 +35,13 @@ class AudioStreamProcessor extends AudioWorkletProcessor {
         this.currentRightBuffer = null;
         this.leftBufferIndex = 0;
         this.rightBufferIndex = 0;
-      } else if (event.data.type === \'pause\') {
+      } else if (event.data.type === 'pause') {
         this.isPlaying = false;
         // keep buffers for resume
-      } else if (event.data.type === \'resume\') {
+      } else if (event.data.type === 'resume') {
         this.isPlaying = true;
         if (this.leftBufferQueue.length <= 2) {
-          this.port.postMessage({ type: \'dataRequest\' });
+          this.port.postMessage({ type: 'dataRequest' });
         }
       }
     };
@@ -78,7 +76,7 @@ class AudioStreamProcessor extends AudioWorkletProcessor {
 
     // request data when playing and buffer is getting low OR when we are producing silence
     if (this.isPlaying && (this.leftBufferQueue.length <= 2 || this.silentSamples > 1024)) {
-      this.port.postMessage({ type: \'dataRequest\' });
+      this.port.postMessage({ type: 'dataRequest' });
       // reset count
       if (this.silentSamples > 1024) {
         this.silentSamples = 0;
@@ -88,7 +86,7 @@ class AudioStreamProcessor extends AudioWorkletProcessor {
     // log status every 8192 samples
     if (this.samplesProcessed % 8192 === 0) {
       this.port.postMessage({
-        type: \'bufferStatus\',
+        type: 'bufferStatus',
         queueLength: this.leftBufferQueue.length,
         samplesProcessed: this.samplesProcessed,
         silentSamples: this.silentSamples,
@@ -132,6 +130,4 @@ class AudioStreamProcessor extends AudioWorkletProcessor {
   }
 }
 
-registerProcessor(\'audio-stream-processor\', AudioStreamProcessor);
-
-';
+registerProcessor('audio-stream-processor', AudioStreamProcessor);

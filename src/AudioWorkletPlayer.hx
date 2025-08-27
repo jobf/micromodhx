@@ -31,13 +31,10 @@ class AudioWorkletPlayer {
 		buffersProcessed = 0;
 		audioContext = new AudioContext();
 
-		// load the processor vias a blob url
 		var blob = new Blob([Processor.code], {type: "application/javascript"});
 		var url = URL.createObjectURL(blob);
 		audioContext.audioWorklet.addModule(url);
 
-		// practice good blob url hygiene ??
-		// URL.revokeObjectURL(url);
 
 		// delay the next part because the worklet will fail when audio-stream-processor is not finished loading
 		Timer.delay(() -> {
@@ -53,9 +50,13 @@ class AudioWorkletPlayer {
 				// channelInterpretation: channelInterpretation
 			});
 
+				// practice good blob url hygiene ??
+				// URL.revokeObjectURL(url);
+
+
 			// listen for messages from the processor (to tell us it's hungry)
 			node.port.onmessage = event -> {
-				if (event.data.type == 'needMoreData') {
+				if (event.data.type == 'dataRequest') {
 					// Generate and send more data immediately
 					if (isPlaying) {
 						generateAndSendBuffer();
