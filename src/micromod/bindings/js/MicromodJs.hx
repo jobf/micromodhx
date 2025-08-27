@@ -14,7 +14,13 @@ import js.lib.Float32Array;
 	var instrumentName(default, null):String;
 }
 
-@:native("Micromod") extern class Micromod {
+interface AudioSource
+{
+	function getSamplingRate():Int;
+	function getAudio(leftBuf:Float32Array, rightBuf:Float32Array, count:Int):Void;
+}
+
+@:native("Micromod") extern class Micromod implements AudioSource {
 	function new(module:Module, sampleRate:Int):Void;
 	function getVersion():String;
 	function getSamplingRate():Int;
