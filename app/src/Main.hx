@@ -75,10 +75,10 @@ class Main extends App {
 				on_press: interactive -> {
 					onUpdate.add(i -> {
 						processed.text = player.getBuffersProcessed() + "";
-						text.update(processed);
+						text.updateText(processed);
 
 						size.text = player.getBufferSize() + "";
-						text.update(size);
+						text.updateText(size);
 					});
 
 					player.play();
