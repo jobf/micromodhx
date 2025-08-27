@@ -71,13 +71,9 @@ extern class AudioContext extends BaseAudioContext {
 	var audioWorklet:AudioWorkletNode;
 }
 
-
 @:native("AudioWorkletNode")
-@:selfCall
 extern class AudioWorkletNode extends AudioNode {
 	function new(context:AudioContext, name:String, options:AudioWorkletNodeOptions):Void;
 	var port:MessagePort;
-	// function connect(destination:AudioDestinationNode):Void;
-	// function disconnect():Void;
 	function addModule(url:String):Void;
 }
