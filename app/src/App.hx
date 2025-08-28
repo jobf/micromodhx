@@ -1,3 +1,4 @@
+import peote.view.text.Text;
 import lime.ui.MouseButton;
 import peote.view.Display;
 import peote.view.text.TextProgram;
@@ -104,9 +105,12 @@ abstract class App extends Application {
 					var elem = text.buff.getElement(lastOverIndex);
 					if (elem != null) {
 						elem.fgColor.a = 0xff;
-						text.buff.updateElement(elem);
-						if (elem.owner.onOut != null) {
-							elem.owner.onOut(elem.owner);
+						var owner:Text = elem.owner;
+						if (owner.onOut != null) {
+							owner.onOut(owner);
+							for (e in owner.elements) {
+								this.text.buff.updateElement(e);
+							}
 						}
 					}
 				}
@@ -114,9 +118,13 @@ abstract class App extends Application {
 					var elem = text.buff.getElement(pickedElement);
 					if (elem != null) {
 						elem.fgColor.a = 0x80;
-						text.buff.updateElement(elem);
-						if (elem.owner.onOver != null) {
-							elem.owner.onOver(elem.owner);
+						var owner:Text = elem.owner;
+						if (owner.onOver != null) {
+							owner.onOver(owner);
+
+							for (e in owner.elements) {
+								this.text.buff.updateElement(e);
+							}
 						}
 					}
 				}

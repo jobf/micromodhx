@@ -1,5 +1,6 @@
 package;
 
+import peote.view.Color;
 import peote.view.text.Text;
 #if js
 import js.html.FileList;
@@ -22,10 +23,22 @@ class Main extends App {
 		var writeLine:(line:String) -> Text = line -> {
 			return text.add(new Text(x, y += lineHeight, line));
 		}
-		var hotText= new Text(300,10,"HOTHOTHOT!");
+		var bg = Color.RED;
+		bg.a = 0x80;
+		var hotText= new Text(300,10,"HOTHOTHOT!", {
+			bgColor: bg
+		});
 		text.add(hotText);
 		hotText.onAction = text -> {
-			trace('click');
+			trace('hot click');
+		}
+		hotText.onOver = (text:Text) ->{
+			trace('hot over');
+			text.changeBgA(0xFF);
+		}
+		hotText.onOut = (text:Text) ->{
+			trace('hot out');
+			text.changeBgA(0x80);
 		}
 		writeLine("drop mod on screen");
 

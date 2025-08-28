@@ -92,4 +92,10 @@ class Text {
 	public var onOver:Text->Void;
 	public var onOut:Text->Void;
 	public var onAction:Text->Void;
+
+	public function changeBgA(a:Int){
+		for(e in elements){
+			e.bgColor.a = a;
+		}
+	}
 }
