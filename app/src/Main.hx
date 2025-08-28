@@ -1,20 +1,19 @@
 package;
 
 import peote.view.text.Text;
-
 #if html5
 import js.html.FileList;
 #end
-
 import AudioPlayer;
 import micromod.Micromod;
 
 class Main extends App {
 	var processed:Text;
 	var size:Text;
+	var player:AudioPlayer;
 
 	public function start() {
-		var player = new AudioPlayer();
+		player = new AudioPlayer();
 		player.setAudioSource(new SineSource(player.getSamplingRate()));
 
 		var x = 180;
@@ -70,16 +69,12 @@ class Main extends App {
 		add_element({
 			label: "PLAY",
 			role: BUTTON,
-			conditions: () -> return true,//Micromod.isInitialised,
 			interactions: {
 				on_press: interactive -> {
-					onUpdate.add(i -> {
-						processed.text = player.getBuffersProcessed() + "";
-						text.updateText(processed);
 
-						size.text = player.getBufferSize() + "";
-						text.updateText(size);
-					});
+					if(!onUpdate.has(_onUpdate)){
+						onUpdate.add(_onUpdate);
+					}
 
 					player.play();
 				}
@@ -89,13 +84,11 @@ class Main extends App {
 		add_element({
 			label: "PAUSE",
 			role: BUTTON,
-			conditions: () -> return Micromod.isInitialised,
 			interactions: {
 				on_press: interactive -> {
-					if(player.isPlaying){
+					if (player.isPlaying) {
 						player.pause();
-					}
-					else{
+					} else {
 						player.resume();
 					}
 				}
@@ -105,7 +98,6 @@ class Main extends App {
 		add_element({
 			label: "STOP",
 			role: BUTTON,
-			conditions: () -> return Micromod.isInitialised,
 			interactions: {
 				on_press: interactive -> {
 					player.stop();
@@ -117,12 +109,21 @@ class Main extends App {
 		add_element({
 			label: "TEST",
 			role: BUTTON,
-			conditions: () -> return true,
 			interactions: {
 				on_press: interactive -> {
 					player.testSimpleAudio();
 				}
 			}
 		});
+	}
+
+	function _onUpdate(dt:Int):Void {
+		if (processed != null) {
+			processed.text = player.getBuffersProcessed() + "";
+			text.updateText(processed);
+
+			size.text = player.getBufferSize() + "";
+			text.updateText(size);
+		}
 	}
 }

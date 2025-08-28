@@ -35,50 +35,52 @@ class AudioPlayer {
 		var url = URL.createObjectURL(blob);
 		audioContext.audioWorklet.addModule(url);
 
-
 		// delay the next part because the worklet will fail when audio-stream-processor is not finished loading
-		Timer.delay(() -> {
-			// create the AudioWorkletNode
-			node = new AudioWorkletNode(audioContext, 'audio-stream-processor', {
-				// numberOfInputs: numberOfInputs,
-				numberOfOutputs: 1,
-				outputChannelCount: [2],
-				// parameterData: parameterData,
-				// processorOptions: processorOptions,
-				// channelCount: channelCount,
-				// channelCountMode: channelCountMode,
-				// channelInterpretation: channelInterpretation
-			});
+		// Timer.delay(() -> {
+		// 	initAudioWorkletNode();
+		// }, 2000);
+	}
 
-				// practice good blob url hygiene ??
-				// URL.revokeObjectURL(url);
+	function initAudioWorkletNode() {
+		// create the AudioWorkletNode
+		node = new AudioWorkletNode(audioContext, 'audio-stream-processor', {
+			// numberOfInputs: numberOfInputs,
+			numberOfOutputs: 1,
+			outputChannelCount: [2],
+			// parameterData: parameterData,
+			// processorOptions: processorOptions,
+			// channelCount: channelCount,
+			// channelCountMode: channelCountMode,
+			// channelInterpretation: channelInterpretation
+		});
 
+		// practice good blob url hygiene ??
+		// URL.revokeObjectURL(url);
 
-			// listen for messages from the processor (to tell us it's hungry)
-			node.port.onmessage = event -> {
-				if (event.data.type == 'dataRequest') {
-					// Generate and send more data immediately
-					if (isPlaying) {
-						generateAndSendBuffer();
-					}
-				} else if (event.data.type == 'bufferStatus') {
-					trace('Buffer queue: ${event.data.queueLength}, Samples: ${event.data.samplesProcessed}, Silent: ${event.data.silentSamples}');
+		// listen for messages from the processor (to tell us it's hungry)
+		node.port.onmessage = event -> {
+			if (event.data.type == 'dataRequest') {
+				// Generate and send more data immediately
+				if (isPlaying) {
+					generateAndSendBuffer();
 				}
+			} else if (event.data.type == 'bufferStatus') {
+				trace('Buffer queue: ${event.data.queueLength}, Samples: ${event.data.samplesProcessed}, Silent: ${event.data.silentSamples}');
 			}
+		}
 
-			// connect to output
-			node.connect(this.audioContext.destination);
+		// connect to output
+		node.connect(this.audioContext.destination);
 
-			isInitialized = true;
-			trace('AudioWorklet stream player initialized (inline processor)');
-			// trace('Connected to destination, gain: ${this.gainNode.gain.value}');
-		}, 2000);
+		isInitialized = true;
+		trace('AudioWorklet stream player initialized (inline processor)');
+		// trace('Connected to destination, gain: ${this.gainNode.gain.value}');
 	}
 
 	function generateAndSendBuffer() {
-		if (!isInitialized || node == null) {
-			return;
-		}
+		// if (!isInitialized || node == null) {
+		// 	return;
+		// }
 		var buffL = new Float32Array(bufferSize);
 		var buffR = new Float32Array(bufferSize);
 		micromod.getAudio(buffL, buffR, bufferSize);
@@ -90,6 +92,7 @@ class AudioPlayer {
 	function streamAudioData(buffL:Float32Array, buffR:Float32Array) {
 		if (audioContext.state == SUSPENDED) {
 			trace('to do .. Resuming suspended audio context...');
+			audioContext.resume();
 			//   audioContext.resume().then(() => {
 			// 	 trace('Audio context resumed, state: ${this.audioContext.state}');
 			//   });
@@ -103,7 +106,6 @@ class AudioPlayer {
 	}
 
 	function generateTestBuffer(buffL:Float32Array, buffR:Float32Array, length:Int = 1024) {
-		
 		var frequency = 220; // A4 note
 		var sampleRate = audioContext.sampleRate;
 
@@ -134,55 +136,59 @@ class AudioPlayer {
 
 	/* begin playback, starts requesting audio data */
 	function play():Void {
+		if (node == null) {
+			initAudioWorkletNode();
+		}
+
 		if (!isInitialized) {
 			trace('AudioWorklet not initialized');
 			return;
-		 }
-	
-		 if (audioContext.state == SUSPENDED) {
+		}
+
+		if (audioContext.state == SUSPENDED) {
 			audioContext.resume();
-		 }
-	
-		 isPlaying = true;
-		 node.port.postMessage({ type: 'start' });
-		 trace('Audio playback started');
+		}
+
+		isPlaying = true;
+		node.port.postMessage({type: 'start'});
+		trace('Audio playback started');
 	}
 
 	/* stop playback completely, clears all buffers */
 	function stop():Void {
-		if (!isInitialized) {
+		if (node == null) {
 			return;
-		 }
-	
-		 isPlaying = false;
-		 node.port.postMessage({ type: 'stop' });
-		 trace('Audio playback stopped');
+		}
+
+		isPlaying = false;
+		node.port.postMessage({type: 'stop'});
+		trace('Audio playback stopped');
 	}
-	
+
 	/* pause playback, keeps buffers for seamless resume */
-	function pause(){
-		if (!isInitialized) {
+	function pause() {
+		if (node == null) {
 			return;
-		 }
-	
-		 isPlaying = false;
-		 node.port.postMessage({ type: 'pause' });
-		 trace('Audio playback paused');
+		}
+
+		isPlaying = false;
+		node.port.postMessage({type: 'pause'});
+		trace('Audio playback paused');
 	}
-	
+
 	/* resume from pause */
-	function resume(){
-		if (!isInitialized) {
+	function resume() {
+		if (node == null) {
 			return;
-		 }
-	
-		 if (audioContext.state == SUSPENDED) {
+		}
+
+		if (audioContext.state == SUSPENDED) {
 			audioContext.resume();
-		 }
-	
-		 isPlaying = true;
-		 node.port.postMessage({ type: 'resume' });
-		 trace('Audio playback resumed');
+		}
+
+		isPlaying = true;
+		node.port.postMessage({type: 'resume'});
+		trace('Audio playback resumed');
 	}
 
 	function setAudioSource(micromod:MicromodSource):Void {
@@ -231,21 +237,20 @@ class SineSource implements MicromodSource {
 	}
 
 	public function getAudio(leftBuf:Float32Array, rightBuf:Float32Array, numSamples:Int):Void {
-		var leftBuffer = new Float32Array(numSamples);
-		var rightBuffer = new Float32Array(numSamples);
-		
 		var leftPhaseIncrement = (2 * Math.PI * leftFreq) / this.sampleRate;
 		var rightPhaseIncrement = (2 * Math.PI * rightFreq) / this.sampleRate;
-		
+
 		for (i in 0...numSamples) {
-		  leftBuffer[i] = Math.sin(this.leftPhase) * amplitude;
-		  rightBuffer[i] = Math.sin(this.rightPhase) * amplitude;
-		  
-		  this.leftPhase += leftPhaseIncrement;
-		  this.rightPhase += rightPhaseIncrement;
-		  
-		  if (this.leftPhase > 2 * Math.PI) this.leftPhase -= 2 * Math.PI;
-		  if (this.rightPhase > 2 * Math.PI) this.rightPhase -= 2 * Math.PI;
+			leftBuf[i] = Math.sin(this.leftPhase) * amplitude;
+			rightBuf[i] = Math.sin(this.rightPhase) * amplitude;
+
+			this.leftPhase += leftPhaseIncrement;
+			this.rightPhase += rightPhaseIncrement;
+
+			if (this.leftPhase > 2 * Math.PI)
+				this.leftPhase -= 2 * Math.PI;
+			if (this.rightPhase > 2 * Math.PI)
+				this.rightPhase -= 2 * Math.PI;
 		}
 	}
 }

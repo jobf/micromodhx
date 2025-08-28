@@ -2,7 +2,6 @@ import peote.view.text.TextProgram;
 import turbo.interactive.Elements;
 import haxe.CallStack;
 import lime.app.Application;
-import lime.ui.Window;
 import peote.ui.PeoteUIDisplay;
 import peote.view.PeoteView;
 import peote.view.text.TextOptions;
