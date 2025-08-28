@@ -20,7 +20,7 @@ class Main extends App {
 		player = new AudioPlayer();
 		player.setAudioSource(new SineSource(player.getSamplingRate()));
 
-		var lineHeight = Std.int(this.text.defaultOptions.letterHeight + this.text.defaultOptions.letterHeight/4);
+		var lineHeight = Std.int(this.text.defaultOptions.letterHeight + this.text.defaultOptions.letterHeight / 4);
 		var x = space * 9;
 		var y = lineHeight;
 
@@ -63,10 +63,7 @@ class Main extends App {
 					text.buff.clear();
 
 					add_button(" PLAY ", (text, char) -> {
-						if (!onUpdate.has(_onUpdate)) {
-							onUpdate.add(_onUpdate);
-						}
-						player.play();
+						play();
 					});
 
 					add_button(" PAUS ", (text, char) -> {
@@ -85,7 +82,7 @@ class Main extends App {
 					// size = writeLine("0", "BUFFER SI");
 
 					duration = Micromod.calculate_song_duration();
-					writeLine(duration + "",   "TOTAL SAMPLES:    ");
+					writeLine(duration + "", "TOTAL SAMPLES:    ");
 
 					processed = writeLine("0", "SAMPLES PROCESSED:");
 
@@ -98,14 +95,17 @@ class Main extends App {
 						trace(index);
 						var completion = index / progressChars.length;
 						var pos = Math.floor(completion * duration);
-						player.samplesProcessed = pos;
 						Micromod.set_position(pos);
+						player.samplesProcessed = pos;
 						resetProgressChars();
-						nLast = Math.floor(completion)-1;
+						nLast = Math.floor(completion) - 1;
+						if (!player.isPlaying) {
+							play();
+						}
 					});
 
 					writeLine("", ""); // empty line
-					
+
 					writeLine("", "Instruments ...");
 
 					for (i in 1...17) {
@@ -115,9 +115,8 @@ class Main extends App {
 
 						instrument += 16;
 
-
 						var b = "";
-						if(instrument <= 0x1f){
+						if (instrument <= 0x1f) {
 							var label = StringTools.lpad('$instrument', "0", 2);
 							b = '$label: ' + Micromod.get_string(instrument);
 						}
@@ -129,6 +128,7 @@ class Main extends App {
 			}
 		});
 	}
+
 	function resetProgressChars():Void {
 		progressChars = [for (n in 0...50) String.fromCharCode(6)];
 	}
@@ -141,8 +141,8 @@ class Main extends App {
 
 			var completion = samplesProcessed / duration;
 			var n = Math.floor(progressChars.length * completion);
-			if(nLast < n && n < progressChars.length) {
-				for(i in 0... n){
+			if (nLast < n && n < progressChars.length) {
+				for (i in 0...n) {
 					progressChars[i] = String.fromCharCode(7);
 				}
 				nLast = n;
@@ -150,6 +150,13 @@ class Main extends App {
 				text.updateText(progress);
 			}
 		}
+	}
+
+	function play() {
+		if (!onUpdate.has(_onUpdate)) {
+			onUpdate.add(_onUpdate);
+		}
+		player.play();
 	}
 
 	function stop() {
