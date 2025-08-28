@@ -1,8 +1,10 @@
+package audio.js;
+
 import haxe.Timer;
 import js.html.audio.AudioWorkletGlobalScope;
 import js.html.audio.AudioDestinationNode;
 #if js
-import AudioWorkletContext;
+import audio.js.AudioWorkletContext;
 import js.html.audio.AudioContextState;
 import js.html.audio.AudioWorkletNodeOptions; // .AudioWorkletNode;
 import js.html.audio.AudioProcessingEvent;

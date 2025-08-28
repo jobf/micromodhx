@@ -1,3 +1,5 @@
+package audio.js;
+
 import js.html.audio.AudioContext;
 import js.html.audio.AudioContextOptions;
 import js.html.audio.AudioNode;

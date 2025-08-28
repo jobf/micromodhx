@@ -1,3 +1,5 @@
+package audio.js;
+
 #if macro
 import sys.io.File;
 import haxe.macro.Context;

@@ -1,3 +1,5 @@
+package audio.js;
+
 #if js
 import js.html.audio.AudioContext;
 import js.html.audio.AudioProcessingEvent;

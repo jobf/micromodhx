@@ -8,6 +8,7 @@ typedef ModuleFormat = haxe.io.Bytes;
 #end
 
 #if js
+import audio.js.AudioPlayer;
 import micromod.bindings.js.MicromodJs as MicromodHx;
 typedef ModuleFormat = js.lib.Int8Array;
 #end

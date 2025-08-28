@@ -1,10 +1,10 @@
 package;
 
 import peote.view.text.Text;
-#if html5
+#if js
 import js.html.FileList;
+import audio.js.AudioPlayer;
 #end
-import AudioPlayer;
 import micromod.Micromod;
 
 class Main extends App {
