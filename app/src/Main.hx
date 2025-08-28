@@ -15,7 +15,8 @@ class Main extends App {
 
 	public function start() {
 		var player = new AudioPlayer();
-		// player.setAudioSource(new SineSource(48000));
+		player.setAudioSource(new SineSource(player.getSamplingRate()));
+
 		var x = 180;
 		var y = 0;
 		var lineHeight = 10;
@@ -69,7 +70,7 @@ class Main extends App {
 		add_element({
 			label: "PLAY",
 			role: BUTTON,
-			conditions: () -> return Micromod.isInitialised,
+			conditions: () -> return true,//Micromod.isInitialised,
 			interactions: {
 				on_press: interactive -> {
 					onUpdate.add(i -> {
@@ -123,19 +124,5 @@ class Main extends App {
 				}
 			}
 		});
-
-
-		add_element({
-			label: "WORKLET",
-			role: BUTTON,
-			conditions: () -> return true,
-			interactions: {
-				on_press: interactive -> {
-					player.startTestWorklet();
-				}
-			}
-		});
-
-		
 	}
 }

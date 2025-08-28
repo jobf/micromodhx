@@ -11,14 +11,14 @@ import js.html.Blob;
 import js.html.URL;
 import js.lib.Float32Array;
 import micromod.bindings.js.MicromodJs.Micromod;
-import micromod.bindings.js.MicromodJs.AudioSource;
+import micromod.bindings.js.MicromodJs.MicromodSource;
 #end
 
 @:publicFields
 class AudioPlayer {
 	var audioContext:AudioWorkletContext;
 	var node:AudioWorkletNode;
-	var micromod:AudioSource;
+	var micromod:MicromodSource;
 	var bufferSize:Int = 0;
 	var buffersProcessed:Int = 0;
 	var feeder:Timer;
@@ -126,22 +126,6 @@ class AudioPlayer {
 				phase -= 2 * Math.PI * 1000;
 			}
 		}
-
-		// Mark this buffer as stereo  errrrm weird dude
-		// buffer.channels = 2;
-		// buffer.samplesPerChannel = length;
-
-		// Debug: Log some sample values occasionally
-		// if (Math.random() < 0.01) {
-		// 	trace('Generated ${length} stereo samples (${buffer.length} total)');
-		// 	trace('First few L/R pairs:', [[buffer[0], buffer[1]], [buffer[2], buffer[3]], [buffer[4], buffer[5]]]);
-		// }
-
-		// return buffer;
-	}
-
-	public function startTestWorklet() {
-		// throw new haxe.exceptions.NotImplementedException();
 	}
 
 	function getSamplingRate():Float {
@@ -156,9 +140,7 @@ class AudioPlayer {
 		 }
 	
 		 if (audioContext.state == SUSPENDED) {
-			audioContext.resume();//.then(() => {
-			//   console.log(`Audio context resumed for start`);
-			// });
+			audioContext.resume();
 		 }
 	
 		 isPlaying = true;
@@ -196,9 +178,6 @@ class AudioPlayer {
 	
 		 if (audioContext.state == SUSPENDED) {
 			audioContext.resume();
-			// .then(() => {
-			//   console.log(`Audio context resumed`);
-			// });
 		 }
 	
 		 isPlaying = true;
@@ -206,9 +185,9 @@ class AudioPlayer {
 		 trace('Audio playback resumed');
 	}
 
-	function setAudioSource(micromod:AudioSource):Void {
+	function setAudioSource(micromod:MicromodSource):Void {
 		this.micromod = micromod;
-		// this.micromod = new SineSource(getSamplingRate());
+		isInitialized = true;
 	}
 
 	function getBufferSize():Int {
@@ -234,34 +213,39 @@ class AudioPlayer {
 	}
 }
 
-class SineSource implements AudioSource {
-	var rate:Int;
-	var freq:Float;
-	var phase:Float;
+class SineSource implements MicromodSource {
+	var sampleRate:Float;
+	var leftFreq:Float = 440;
+	var rightFreq:Float = 220;
+	var amplitude = 1.0;
+	var leftPhase:Float = 0;
+	var rightPhase:Float = 0;
 	var sampleIndex:Int = 0;
 
-	public function new(samplingRate:Int) {
-		rate = samplingRate;
-		freq = 440;
-		phase = 0;
-		trace('SineSource created: $rate, freqHz: $freq');
+	public function new(samplingRate:Float) {
+		sampleRate = samplingRate;
 	}
 
-	public function getSamplingRate():Int {
-		return rate;
+	public function getSamplingRate():Float {
+		return sampleRate;
 	}
 
-	public function getAudio(leftBuf:Float32Array, rightBuf:Float32Array, count:Int):Void {
-		for (i in 0...count) {
-			phase = (sampleIndex * 2 * Math.PI * freq) / rate;
-
-			var leftSample = Math.sin(phase) * 0.3;
-			var rightSample = Math.sin(phase * 0.5) * 0.3; // Different freq for right because yolo
-
-			leftBuf[i] = leftSample;
-			rightBuf[i] = rightSample;
-
-			sampleIndex++;
+	public function getAudio(leftBuf:Float32Array, rightBuf:Float32Array, numSamples:Int):Void {
+		var leftBuffer = new Float32Array(numSamples);
+		var rightBuffer = new Float32Array(numSamples);
+		
+		var leftPhaseIncrement = (2 * Math.PI * leftFreq) / this.sampleRate;
+		var rightPhaseIncrement = (2 * Math.PI * rightFreq) / this.sampleRate;
+		
+		for (i in 0...numSamples) {
+		  leftBuffer[i] = Math.sin(this.leftPhase) * amplitude;
+		  rightBuffer[i] = Math.sin(this.rightPhase) * amplitude;
+		  
+		  this.leftPhase += leftPhaseIncrement;
+		  this.rightPhase += rightPhaseIncrement;
+		  
+		  if (this.leftPhase > 2 * Math.PI) this.leftPhase -= 2 * Math.PI;
+		  if (this.rightPhase > 2 * Math.PI) this.rightPhase -= 2 * Math.PI;
 		}
 	}
 }

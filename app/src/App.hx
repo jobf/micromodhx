@@ -48,7 +48,7 @@ abstract class App extends Application
 
 		var item_rects:Map<String, Rectangle> = ["DEFAULT" => default_item_rect];
 		var colors:Colors = Themes.RAY_CHERRY();
-		// var colors:Colors = Themes.BORDEAUX();
+		var colors:Colors = Themes.BORDEAUX();
 
 		var textOptions:TextOptions = {
 			fgColor: colors.fg_idle,

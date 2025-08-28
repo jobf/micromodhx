@@ -13,16 +13,16 @@ import js.lib.Float32Array;
 	var instrumentName(default, null):String;
 }
 
-interface AudioSource
+interface MicromodSource
 {
-	function getSamplingRate():Int;
+	function getSamplingRate():Float;
 	function getAudio(leftBuf:Float32Array, rightBuf:Float32Array, count:Int):Void;
 }
 
-@:native("Micromod") extern class Micromod implements AudioSource {
+@:native("Micromod") extern class Micromod implements MicromodSource {
 	function new(module:Module, sampleRate:Int):Void;
 	function getVersion():String;
-	function getSamplingRate():Int;
+	function getSamplingRate():Float;
 	function setInterpolation(isEnabled:Bool):Void;
 	function getRow():Int;
 	function getSequencePos():Int;
