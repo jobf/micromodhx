@@ -130,7 +130,7 @@ class Main extends App {
 		});
 	}
 	function resetProgressChars():Void {
-		progressChars = [for (n in 0...50) "-"];
+		progressChars = [for (n in 0...50) String.fromCharCode(6)];
 	}
 
 	function _onUpdate(dt:Int):Void {
@@ -143,7 +143,7 @@ class Main extends App {
 			var n = Math.floor(progressChars.length * completion);
 			if(nLast < n && n < progressChars.length) {
 				for(i in 0... n){
-					progressChars[i] = "*";
+					progressChars[i] = String.fromCharCode(7);
 				}
 				nLast = n;
 				progress.text = progressChars.join("");
