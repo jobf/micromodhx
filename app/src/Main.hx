@@ -1,11 +1,12 @@
 package;
 
 import peote.view.text.Text;
+
 #if html5
 import js.html.FileList;
 #end
-import AudioPlayer;// as AudioPlayer;
-// import AudioPlayer.SineSource;
+
+import AudioPlayer;
 import micromod.Micromod;
 
 class Main extends App {
@@ -35,8 +36,6 @@ class Main extends App {
 					var data:js.lib.Int8Array = new js.lib.Int8Array(reader.result);
 
 					Micromod.initialise(data, Std.int(player.getSamplingRate()));
-					// Micromod.setGain(50); // why so loud?? function is bugged lol
-					// player.setAudioSource(new SineSource(48000));
 					Micromod.get_audio(player);
 
 					/** print mod data*/
