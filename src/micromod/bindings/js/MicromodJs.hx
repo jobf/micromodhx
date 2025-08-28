@@ -26,7 +26,6 @@ interface MicromodSource
 	function setInterpolation(isEnabled:Bool):Void;
 	function getRow():Int;
 	function getSequencePos():Int;
-	function setSequencePos(pos:Int):Void;
 	function calculateSongDuration():Int;
 	function seek(samplePos:Int):Int;
 	function getAudio(leftBuf:Float32Array, rightBuf:Float32Array, count:Int):Void;
@@ -65,7 +64,7 @@ class MicromodJs {
 	}
 
 	static function set_position(pos:Int) {
-		micromod.setSequencePos(pos);
+		micromod.seek(pos);
 	}
 
 	static function get_name():String{
