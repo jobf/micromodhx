@@ -5,7 +5,6 @@ import js.lib.Float32Array;
 @:native("Module") extern class Module {
 	function new(data:js.lib.Int8Array):Void;
 	var songName(default, null):String;
-	var gain:Float;
 	var instruments(default, null):Array<Instrument>;
 }
 
@@ -71,9 +70,5 @@ class MicromodJs {
 
 	static function get_name():String{
 		return module.songName;
-	}
-
-	static function set_mod_gain(v:Float){
-		module.gain = v;
 	}
 }

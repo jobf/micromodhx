@@ -100,8 +100,4 @@ class Micromod {
 	public static function get_name():String {
 		return MicromodHx.get_name();
 	}
-
-	public static function setGain(v:Float) {
-		MicromodHx.set_mod_gain(v);
-	}
 }
