@@ -63,7 +63,7 @@ class Micromod {
 	#end
 
 	#if js
-	public static function get_audio(player:AudioWorkletPlayer){
+	public static function get_audio(player:AudioPlayer){
 		@:privateAccess
 		player.setAudioSource(MicromodHx.micromod);
 	}

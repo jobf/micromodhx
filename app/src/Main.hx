@@ -4,8 +4,8 @@ import peote.view.text.Text;
 #if html5
 import js.html.FileList;
 #end
-import AudioWorkletPlayer as AudioPlayer;
-import AudioWorkletPlayer.SineSource;
+import AudioPlayer;// as AudioPlayer;
+// import AudioPlayer.SineSource;
 import micromod.Micromod;
 
 class Main extends App {
