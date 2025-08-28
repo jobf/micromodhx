@@ -62,14 +62,14 @@ class Main extends App {
 					yButton = space;
 					text.buff.clear();
 
-					add_button(" PLAY ", text -> {
+					add_button(" PLAY ", (text, char) -> {
 						if (!onUpdate.has(_onUpdate)) {
 							onUpdate.add(_onUpdate);
 						}
 						player.play();
 					});
 
-					add_button(" PAUS ", text -> {
+					add_button(" PAUS ", (text, char) -> {
 						if (player.isPlaying) {
 							player.pause();
 						} else {
@@ -77,7 +77,7 @@ class Main extends App {
 						}
 					});
 
-					add_button(" STOP ", text -> {
+					add_button(" STOP ", (text, char) -> {
 						stop();
 					});
 
@@ -93,8 +93,15 @@ class Main extends App {
 
 					// progress bar
 					resetProgressChars();
-					progress = add_button(progressChars.join(""), text -> {
-						trace('cliklc');
+					progress = add_button(progressChars.join(""), (text, char) -> {
+						var index = text.elements.indexOf(char);
+						trace(index);
+						var completion = index / progressChars.length;
+						var pos = Math.floor(completion * duration);
+						player.samplesProcessed = pos;
+						Micromod.set_position(pos);
+						resetProgressChars();
+						nLast = Math.floor(completion)-1;
 					});
 
 					writeLine("", ""); // empty line
@@ -135,14 +142,12 @@ class Main extends App {
 			var completion = samplesProcessed / duration;
 			var n = Math.floor(progressChars.length * completion);
 			if(nLast < n && n < progressChars.length) {
-				progressChars[n] = "|";
+				for(i in 0... n){
+					progressChars[i] = "*";
+				}
 				nLast = n;
 				progress.text = progressChars.join("");
 				text.updateText(progress);
-			}
-
-			if(samplesProcessed >= (duration)){
-				stop();
 			}
 		}
 	}

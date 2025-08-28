@@ -89,9 +89,9 @@ class Text {
 		if (textOptions != null) options = textOptions.copy() else options = {};
 	}
 
-	public var onOver:Text->Void;
-	public var onOut:Text->Void;
-	public var onAction:Text->Void;
+	public var onOver:(Text, TextElement)->Void;
+	public var onOut:(Text, TextElement)->Void;
+	public var onAction:(Text, TextElement)->Void;
 
 	public function changeBgA(a:Int){
 		for(e in elements){

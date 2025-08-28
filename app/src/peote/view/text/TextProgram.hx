@@ -179,7 +179,7 @@ class TextProgram extends Program {
 					if (changeTXT) {
 						if (index < text.elements.length) {
 							e = text.elements[index];
-							e.x = x; e.y = y; e.w = w; e.h = h; e.fgColor = fgColor; e.bgColor = bgColor; e.z = zIndex;
+							e.x = x; e.y = y; e.w = w; e.h = h; e.z = zIndex; // e.fgColor = fgColor; e.bgColor = bgColor; 
 							e.tile = fontData.getTile(text.text.charCodeAt(i));
 							if (bufferAdd) buff.addElement(e) else buff.updateElement(e);
 						}

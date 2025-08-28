@@ -1,3 +1,4 @@
+import peote.view.text.TextElement;
 import peote.view.Color;
 import peote.view.text.Text;
 import peote.view.text.BMFontData;
@@ -48,14 +49,10 @@ abstract class App extends Application {
 		space = Std.int(textOptions.letterHeight + (textOptions.letterHeight / 8));
 		xButton = space * 2;
 
-		// add_button = (label, action, x=0, y=0) -> {
-		
-		// }
-
 		start();
 	}
 
-	function add_button(label:String, action:(text:Text)->Void, x_:Int=0, y_:Int=0){
+	function add_button(label:String, action:(text:Text, char:TextElement)->Void, x_:Int=0, y_:Int=0){
 
 		var x = x_ > 0 ? x_ : xButton;
 		var y = y_ > 0 ? y_ : yButton += space;
@@ -66,8 +63,8 @@ abstract class App extends Application {
 		});
 		
 		text.onAction = action;
-		text.onOver = (text:Text) -> text.changeBgA(0x8F);
-		text.onOut = (text:Text) -> text.changeBgA(0xFF);
+		text.onOver = (text:Text, char:TextElement) -> text.changeBgA(0x8F);
+		text.onOut = (text:Text, char:TextElement) -> text.changeBgA(0xFF);
 
 		return this.text.add(text);
 	}
@@ -98,7 +95,7 @@ abstract class App extends Application {
 						elem.fgColor.a = 0xff;
 						var owner:Text = elem.owner;
 						if (owner.onOut != null) {
-							owner.onOut(owner);
+							owner.onOut(owner, elem);
 							for (e in owner.elements) {
 								this.text.buff.updateElement(e);
 							}
@@ -111,7 +108,7 @@ abstract class App extends Application {
 						elem.fgColor.a = 0x80;
 						var owner:Text = elem.owner;
 						if (owner.onOver != null) {
-							owner.onOver(owner);
+							owner.onOver(owner, elem);
 
 							for (e in owner.elements) {
 								this.text.buff.updateElement(e);
@@ -132,7 +129,7 @@ abstract class App extends Application {
 				elem.fgColor.a = 0xff;
 				text.buff.updateElement(elem);
 				if (elem.owner.onOut != null) {
-					elem.owner.onOut(elem.owner);
+					elem.owner.onOut(elem.owner, elem);
 				}
 			}
 		}
@@ -146,7 +143,7 @@ abstract class App extends Application {
 				if (elem == null)
 					return;
 				if (elem.owner.onAction != null) {
-					elem.owner.onAction(elem.owner);
+					elem.owner.onAction(elem.owner, elem);
 				}
 			}
 		} catch (_)
