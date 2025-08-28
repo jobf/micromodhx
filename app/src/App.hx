@@ -15,6 +15,7 @@ abstract class App extends Application {
 	var display:Display;
 	var text:TextProgram;
 	var space:Int = 0;
+	var xButton:Int;
 	var yButton:Int = 0;
 
 	override function onWindowCreate():Void {
@@ -45,25 +46,31 @@ abstract class App extends Application {
 		display.addProgram(text);
 
 		space = Std.int(textOptions.letterHeight + (textOptions.letterHeight / 8));
-		var x = space * 2;
+		xButton = space * 2;
 
-		add_button = (label, action) -> {
-			var text = new Text(x, yButton += space, label, {
-				fgColor: Color.WHITE,
-				bgColor: Color.RED,
-			});
-			
-			text.onAction = action;
-			text.onOver = (text:Text) -> text.changeBgA(0x8F);
-			text.onOut = (text:Text) -> text.changeBgA(0xFF);
-
-			return this.text.add(text);
-		}
+		// add_button = (label, action, x=0, y=0) -> {
+		
+		// }
 
 		start();
 	}
 
-	var add_button:(label:String, action:(text:Text) -> Void) -> Text;
+	function add_button(label:String, action:(text:Text)->Void, x_:Int=0, y_:Int=0){
+
+		var x = x_ > 0 ? x_ : xButton;
+		var y = y_ > 0 ? y_ : yButton += space;
+
+		var text = new Text(x, y, label, {
+			fgColor: Color.WHITE,
+			bgColor: Color.GREEN3,
+		});
+		
+		text.onAction = action;
+		text.onOver = (text:Text) -> text.changeBgA(0x8F);
+		text.onOut = (text:Text) -> text.changeBgA(0xFF);
+
+		return this.text.add(text);
+	}
 
 	abstract function start():Void;
 

@@ -10,8 +10,11 @@ import micromod.Micromod;
 
 class Main extends App {
 	var processed:Text;
-	var size:Text;
+	var progress:Text;
 	var player:AudioPlayer;
+	var progressChars:Array<String>;
+	var duration:Int;
+	var nLast:Int = -1;
 
 	public function start() {
 		player = new AudioPlayer();
@@ -24,7 +27,7 @@ class Main extends App {
 		var writeLine:(line:String, title:String) -> Text = (line, title) -> {
 			// add title
 			text.add(new Text(x, y, title, {
-				fgColor: Color.GREY2,
+				fgColor: Color.GREEN3,
 			}));
 
 			// add line
@@ -40,7 +43,8 @@ class Main extends App {
 		writeLine("drop mod on screen", "");
 
 		window.onDropFile.add((fileList) -> {
-			trace(fileList);
+			// trace(fileList);
+			resetProgressChars();
 			var list:js.html.FileList = cast fileList;
 			if (list.length > 0) {
 				var reader = new js.html.FileReader();
@@ -74,18 +78,27 @@ class Main extends App {
 					});
 
 					add_button(" STOP ", text -> {
-						player.stop();
-						Micromod.set_position(0);
+						stop();
 					});
 
 					writeLine(Micromod.get_name(), "NAME:");
 					// size = writeLine("0", "BUFFER SI");
 
-					var duration = Micromod.calculate_song_duration();
+					duration = Micromod.calculate_song_duration();
 					writeLine(duration + "",   "TOTAL SAMPLES:    ");
 
 					processed = writeLine("0", "SAMPLES PROCESSED:");
 
+					writeLine("", ""); // empty line
+
+					// progress bar
+					resetProgressChars();
+					progress = add_button(progressChars.join(""), text -> {
+						trace('cliklc');
+					});
+
+					writeLine("", ""); // empty line
+					
 					writeLine("", "Instruments ...");
 
 					for (i in 1...17) {
@@ -109,14 +122,40 @@ class Main extends App {
 			}
 		});
 	}
+	function resetProgressChars():Void {
+		progressChars = [for (n in 0...50) "-"];
+	}
 
 	function _onUpdate(dt:Int):Void {
-		if (processed != null) {
-			processed.text = player.getSamplesProcessed() + "";
+		if (processed != null && player.isPlaying) {
+			var samplesProcessed = player.getSamplesProcessed();
+			processed.text = samplesProcessed + "";
 			text.updateText(processed);
 
-			// size.text = player.getBufferSize() + "";
-			// text.updateText(size);
+			var completion = samplesProcessed / duration;
+			var n = Math.floor(progressChars.length * completion);
+			if(nLast < n && n < progressChars.length) {
+				progressChars[n] = "|";
+				nLast = n;
+				progress.text = progressChars.join("");
+				text.updateText(progress);
+			}
+
+			if(samplesProcessed >= (duration)){
+				stop();
+			}
 		}
+	}
+
+	function stop() {
+		player.stop();
+		nLast = -1;
+		Micromod.set_position(0);
+		processed.text = "0";
+		text.updateText(processed);
+
+		resetProgressChars();
+		progress.text = progressChars.join("");
+		text.updateText(progress);
 	}
 }

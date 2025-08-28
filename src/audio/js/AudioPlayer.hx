@@ -151,7 +151,7 @@ class AudioPlayer {
 		if (node == null) {
 			return;
 		}
-
+		samplesProcessed = 0;
 		isPlaying = false;
 		node.port.postMessage({type: 'stop'});
 		trace('Audio playback stopped');
