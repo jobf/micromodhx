@@ -1,17 +1,17 @@
+import lime.ui.MouseButton;
+import peote.view.Display;
 import peote.view.text.TextProgram;
 import turbo.interactive.Elements;
 import haxe.CallStack;
 import lime.app.Application;
-import peote.ui.PeoteUIDisplay;
 import peote.view.PeoteView;
 import peote.view.text.TextOptions;
 import turbo.theme.Colors;
 import turbo.UI;
 
-abstract class App extends Application 
-{
+abstract class App extends Application {
 	var peoteView:PeoteView;
-	var uiDisplay:PeoteUIDisplay;
+	var display:Display;
 	var text:TextProgram;
 	var ui:UI;
 
@@ -28,8 +28,10 @@ abstract class App extends Application
 		}
 	}
 
-	function init(){
+	function init() {
 		peoteView = new PeoteView(window);
+		display = new Display(0, 0, window.width, window.height);
+		peoteView.addDisplay(display);
 
 		var display_rect:Rectangle = {
 			x: 20,
@@ -61,14 +63,13 @@ abstract class App extends Application
 
 		ui = new UI(peoteView, display_rect, item_rects, colors, textOptions);
 		text = new TextProgram();
-		ui.display.addProgram(text);
+		display.addProgram(text);
 
 		var x = 0;
 		var y = 0;
 		var space = default_item_rect.height + 2;
 
-		add_element = (model:InteractiveModel) ->
-		{
+		add_element = (model:InteractiveModel) -> {
 			var element = ui.make(model, x, y);
 			y += space;
 			return element;
@@ -80,4 +81,76 @@ abstract class App extends Application
 	var add_element:(model:InteractiveModel) -> BaseInteractive;
 
 	abstract function start():Void;
+
+	override function onMouseMove(x:Float, y:Float) {
+		#if (!html5)
+		lastMoveX = x;
+		lastMoveY = y;
+		isMouseMove = true;
+		#else
+		onMouseMoveFrameSynced(x, y);
+		#end
+	}
+
+	var lastOverIndex:Int = -1;
+	var lastDownIndex:Int = -1;
+	var lockDown = false;
+
+	inline function onMouseMoveFrameSynced(x:Float, y:Float):Void {
+		try {
+			var pickedElement = peoteView.getElementAt(x, y, display, text);
+			if (pickedElement != lastOverIndex) {
+				if (lastOverIndex >= 0) {
+					var elem = text.buff.getElement(lastOverIndex);
+					if (elem != null) {
+						elem.fgColor.a = 0xff;
+						text.buff.updateElement(elem);
+						if (elem.owner.onOut != null) {
+							elem.owner.onOut(elem.owner);
+						}
+					}
+				}
+				if (pickedElement >= 0) {
+					var elem = text.buff.getElement(pickedElement);
+					if (elem != null) {
+						elem.fgColor.a = 0x80;
+						text.buff.updateElement(elem);
+						if (elem.owner.onOver != null) {
+							elem.owner.onOver(elem.owner);
+						}
+					}
+				}
+				lastOverIndex = pickedElement;
+			}
+		} catch (_)
+			trace(CallStack.toString(CallStack.exceptionStack()), _);
+	}
+
+	override function onWindowLeave():Void {
+		if (lastDownIndex >= 0) {
+			var elem = text.buff.getElement(lastOverIndex);
+			if (elem != null) {
+				elem.fgColor.a = 0xff;
+				text.buff.updateElement(elem);
+				if (elem.owner.onOut != null) {
+					elem.owner.onOut(elem.owner);
+				}
+			}
+		}
+	}
+
+	override function onMouseDown(x:Float, y:Float, button:MouseButton):Void {
+		try {
+			lastDownIndex = peoteView.getElementAt(x, y, display, text);
+			if (lastDownIndex >= 0) {
+				var elem = text.buff.getElement(lastDownIndex);
+				if (elem == null)
+					return;
+				if (elem.owner.onAction != null) {
+					elem.owner.onAction(elem.owner);
+				}
+			}
+		} catch (_)
+			trace(CallStack.toString(CallStack.exceptionStack()), _);
+	}
 }

@@ -22,7 +22,11 @@ class Main extends App {
 		var writeLine:(line:String) -> Text = line -> {
 			return text.add(new Text(x, y += lineHeight, line));
 		}
-
+		var hotText= new Text(300,10,"HOTHOTHOT!");
+		text.add(hotText);
+		hotText.onAction = text -> {
+			trace('click');
+		}
 		writeLine("drop mod on screen");
 
 		window.onDropFile.add((fileList) -> {
