@@ -14,11 +14,7 @@
 	<source path="src" />
 	<haxelib name="lime" />	
 	<haxelib name="peote-view" />
-	<haxelib name="input2action" />
-	<haxelib name="peote-ui" />
 	<haxelib name="micromod" path="../" />
-
-	<source path="/old/home/jf/code/haxe/peote/turbo-ui/lib" />
 	
 	<!-- force compiling for a special opengl-es version (only set one of them) -->
 	<!-- this optimizes the build and forces no-runtimecheck for the gl-features -->

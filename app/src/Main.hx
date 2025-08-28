@@ -17,30 +17,24 @@ class Main extends App {
 		player = new AudioPlayer();
 		player.setAudioSource(new SineSource(player.getSamplingRate()));
 
+		var lineHeight = Std.int(this.text.defaultOptions.letterHeight + this.text.defaultOptions.letterHeight/8);
 		var x = 180;
-		var y = 0;
-		var lineHeight = 10;
-		var writeLine:(line:String) -> Text = line -> {
-			return text.add(new Text(x, y += lineHeight, line));
+		var y = lineHeight;
+
+		var writeLine:(line:String, title:String) -> Text = (line, title) -> {
+			// add title
+			text.add(new Text(x, y, title));
+
+			// add line
+			var xLabel = this.text.defaultOptions.letterWidth * (title.length + 1) + x;
+			var line = text.add(new Text(xLabel, y, line));
+			y += lineHeight;
+
+			// return line
+			line;
 		}
-		var bg = Color.RED;
-		bg.a = 0x80;
-		var hotText= new Text(300,10,"HOTHOTHOT!", {
-			bgColor: bg
-		});
-		text.add(hotText);
-		hotText.onAction = text -> {
-			trace('hot click');
-		}
-		hotText.onOver = (text:Text) ->{
-			trace('hot over');
-			text.changeBgA(0xFF);
-		}
-		hotText.onOut = (text:Text) ->{
-			trace('hot out');
-			text.changeBgA(0x80);
-		}
-		writeLine("drop mod on screen");
+
+		writeLine("drop mod on screen", "");
 
 		window.onDropFile.add((fileList) -> {
 			trace(fileList);
@@ -60,12 +54,33 @@ class Main extends App {
 					y = 0;
 					text.buff.clear();
 
-					writeLine(Micromod.get_name());
-					processed = writeLine("0");
-					size = writeLine("0");
+					add_button(" PLAY ", text -> {
+						if (!onUpdate.has(_onUpdate)) {
+							onUpdate.add(_onUpdate);
+						}
+						player.play();
+					});
+
+					add_button(" PAUS ", text -> {
+						if (player.isPlaying) {
+							player.pause();
+						} else {
+							player.resume();
+						}
+					});
+
+					add_button(" STOP ", text -> {
+						player.stop();
+						Micromod.set_position(0);
+					});
+
+					writeLine(Micromod.get_name(), "NAME:");
+					// size = writeLine("0", "BUFFER SI");
 
 					var duration = Micromod.calculate_song_duration();
-					writeLine(duration + " total");
+					writeLine(duration + "", "TOTAL SAMPLES:");
+
+					processed = writeLine("0", "SAMPLES PROCESSED:");
 
 					for (i in 0...16) {
 						var instrument = i;
@@ -76,60 +91,10 @@ class Main extends App {
 						var label = StringTools.lpad('$instrument', "0", 2);
 						var b = '$label: ' + Micromod.get_string(instrument);
 
-						writeLine('$a $b');
+						writeLine('$a $b', "");
 					}
 				};
 				reader.readAsArrayBuffer(list.item(0));
-			}
-		});
-
-		add_element({
-			label: "PLAY",
-			role: BUTTON,
-			interactions: {
-				on_press: interactive -> {
-
-					if(!onUpdate.has(_onUpdate)){
-						onUpdate.add(_onUpdate);
-					}
-
-					player.play();
-				}
-			}
-		});
-
-		add_element({
-			label: "PAUSE",
-			role: BUTTON,
-			interactions: {
-				on_press: interactive -> {
-					if (player.isPlaying) {
-						player.pause();
-					} else {
-						player.resume();
-					}
-				}
-			}
-		});
-
-		add_element({
-			label: "STOP",
-			role: BUTTON,
-			interactions: {
-				on_press: interactive -> {
-					player.stop();
-					Micromod.set_position(0);
-				}
-			}
-		});
-
-		add_element({
-			label: "TEST",
-			role: BUTTON,
-			interactions: {
-				on_press: interactive -> {
-					player.testSimpleAudio();
-				}
 			}
 		});
 	}
@@ -139,8 +104,8 @@ class Main extends App {
 			processed.text = player.getBuffersProcessed() + "";
 			text.updateText(processed);
 
-			size.text = player.getBufferSize() + "";
-			text.updateText(size);
+			// size.text = player.getBufferSize() + "";
+			// text.updateText(size);
 		}
 	}
 }

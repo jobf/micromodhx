@@ -1,20 +1,17 @@
+import peote.view.Color;
 import peote.view.text.Text;
 import lime.ui.MouseButton;
 import peote.view.Display;
 import peote.view.text.TextProgram;
-import turbo.interactive.Elements;
 import haxe.CallStack;
 import lime.app.Application;
 import peote.view.PeoteView;
 import peote.view.text.TextOptions;
-import turbo.theme.Colors;
-import turbo.UI;
 
 abstract class App extends Application {
 	var peoteView:PeoteView;
 	var display:Display;
 	var text:TextProgram;
-	var ui:UI;
 
 	override function onWindowCreate():Void {
 		switch (window.context.type) {
@@ -34,52 +31,40 @@ abstract class App extends Application {
 		display = new Display(0, 0, window.width, window.height);
 		peoteView.addDisplay(display);
 
-		var display_rect:Rectangle = {
-			x: 20,
-			y: 20,
-			width: window.width - 40,
-			height: window.height - 40
-		}
-
-		var default_item_rect:Rectangle = {
-			x: 0,
-			y: 0,
-			width: 150,
-			height: 30
-		}
-
-		var item_rects:Map<String, Rectangle> = ["DEFAULT" => default_item_rect];
-		var colors:Colors = Themes.RAY_CHERRY();
-		var colors:Colors = Themes.BORDEAUX();
-
 		var textOptions:TextOptions = {
-			fgColor: colors.fg_idle,
+			fgColor: Color.WHITE,
 			// bgColor: bgColor,
-			// letterWidth: letterWidth,
-			// letterHeight: letterHeight,
+			letterWidth: 16,
+			letterHeight: 16,
 			// letterSpace: letterSpace,
 			// lineSpace: lineSpace,
 			// zIndex: zIndex
 		}
 
-		ui = new UI(peoteView, display_rect, item_rects, colors, textOptions);
-		text = new TextProgram();
+		text = new TextProgram(textOptions);
 		display.addProgram(text);
 
-		var x = 0;
+		var space = Std.int(textOptions.letterHeight + (textOptions.letterHeight / 8));
+		var x = space;
 		var y = 0;
-		var space = default_item_rect.height + 2;
 
-		add_element = (model:InteractiveModel) -> {
-			var element = ui.make(model, x, y);
-			y += space;
-			return element;
-		};
+		add_button = (label, action) -> {
+			var text = new Text(x, y += space, label, {
+				fgColor: Color.WHITE,
+				bgColor: Color.RED,
+			});
+			
+			text.onAction = action;
+			text.onOver = (text:Text) -> text.changeBgA(0x8F);
+			text.onOut = (text:Text) -> text.changeBgA(0xFF);
+
+			return this.text.add(text);
+		}
 
 		start();
 	}
 
-	var add_element:(model:InteractiveModel) -> BaseInteractive;
+	var add_button:(label:String, action:(text:Text) -> Void) -> Text;
 
 	abstract function start():Void;
 
