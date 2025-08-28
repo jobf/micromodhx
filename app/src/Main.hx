@@ -17,16 +17,19 @@ class Main extends App {
 		player = new AudioPlayer();
 		player.setAudioSource(new SineSource(player.getSamplingRate()));
 
-		var lineHeight = Std.int(this.text.defaultOptions.letterHeight + this.text.defaultOptions.letterHeight/8);
+		var lineHeight = Std.int(this.text.defaultOptions.letterHeight + this.text.defaultOptions.letterHeight/4);
 		var x = 180;
 		var y = lineHeight;
 
 		var writeLine:(line:String, title:String) -> Text = (line, title) -> {
 			// add title
-			text.add(new Text(x, y, title));
+			text.add(new Text(x, y, title, {
+				fgColor: Color.GREY2,
+			}));
 
 			// add line
-			var xLabel = this.text.defaultOptions.letterWidth * (title.length + 1) + x;
+			var space = title.length == 0 ? 0 : 1;
+			var xLabel = this.text.defaultOptions.letterWidth * (title.length + space) + x;
 			var line = text.add(new Text(xLabel, y, line));
 			y += lineHeight;
 
@@ -51,7 +54,8 @@ class Main extends App {
 
 					/** print mod data*/
 
-					y = 0;
+					y = lineHeight;
+					yButton = space;
 					text.buff.clear();
 
 					add_button(" PLAY ", text -> {
@@ -82,14 +86,21 @@ class Main extends App {
 
 					processed = writeLine("0", "SAMPLES PROCESSED:");
 
-					for (i in 0...16) {
+					writeLine("", "Instruments ...");
+
+					for (i in 1...17) {
 						var instrument = i;
 						var label = StringTools.lpad('$instrument', "0", 2);
 						var a = '$label: ' + Micromod.get_string(instrument);
 
 						instrument += 16;
-						var label = StringTools.lpad('$instrument', "0", 2);
-						var b = '$label: ' + Micromod.get_string(instrument);
+
+
+						var b = "";
+						if(instrument <= 0x1f){
+							var label = StringTools.lpad('$instrument', "0", 2);
+							b = '$label: ' + Micromod.get_string(instrument);
+						}
 
 						writeLine('$a $b', "");
 					}

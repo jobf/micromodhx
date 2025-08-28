@@ -67,7 +67,7 @@ class AudioPlayer {
 					generateAndSendBuffer();
 				}
 			} else if (event.data.type == 'bufferStatus') {
-				trace('Buffer queue: ${event.data.queueLength}, Samples: ${event.data.samplesProcessed}, Silent: ${event.data.silentSamples}');
+				// trace('Buffer queue: ${event.data.queueLength}, Samples: ${event.data.samplesProcessed}, Silent: ${event.data.silentSamples}');
 			}
 		}
 

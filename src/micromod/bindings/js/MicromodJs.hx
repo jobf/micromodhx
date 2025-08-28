@@ -49,7 +49,7 @@ class MicromodJs {
 	}
 
 	static function get_string(instrument:Int):String {
-		return module.instruments[instrument].instrumentName;
+		return module.instruments[instrument]?.instrumentName;
 	}
 
 	static function calculate_song_duration():Int {
