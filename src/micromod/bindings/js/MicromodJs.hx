@@ -15,6 +15,7 @@ import js.lib.Float32Array;
 
 interface MicromodSource
 {
+	function calculateSongDuration():Int;
 	function getSamplingRate():Float;
 	function getAudio(leftBuf:Float32Array, rightBuf:Float32Array, count:Int):Void;
 }

@@ -23,6 +23,7 @@ class AudioPlayer {
 	var micromod:MicromodSource;
 	var bufferSize:Int = 0;
 	var samplesProcessed:Int = 0;
+	var totalSamples:Int = 0;
 	var feeder:Timer;
 	var isInitialized:Bool = false;
 	var phase:Float = 0;
@@ -79,6 +80,10 @@ class AudioPlayer {
 		var buffR = new Float32Array(bufferSize);
 		micromod.getAudio(buffL, buffR, bufferSize);
 		streamAudioData(buffL, buffR);
+		if(samplesProcessed >= totalSamples)
+		{
+			samplesProcessed = 0;
+		}
 	}
 
 	function streamAudioData(buffL:Float32Array, buffR:Float32Array) {
@@ -185,6 +190,7 @@ class AudioPlayer {
 
 	function setAudioSource(micromod:MicromodSource):Void {
 		this.micromod = micromod;
+		totalSamples = micromod.calculateSongDuration();
 		isInitialized = true;
 	}
 
@@ -226,6 +232,10 @@ class SineSource implements MicromodSource {
 
 	public function getSamplingRate():Float {
 		return sampleRate;
+	}
+
+	public function calculateSongDuration():Int {
+		return Std.int(sampleRate * 5);
 	}
 
 	public function getAudio(leftBuf:Float32Array, rightBuf:Float32Array, numSamples:Int):Void {

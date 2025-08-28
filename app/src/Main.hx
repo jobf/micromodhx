@@ -141,13 +141,14 @@ class Main extends App {
 
 			var completion = samplesProcessed / duration;
 			var n = Math.floor(progressChars.length * completion);
-			if (nLast < n && n < progressChars.length) {
-				for (i in 0...n) {
-					progressChars[i] = String.fromCharCode(7);
+			if (nLast != n) {
+				for (i in 0...progressChars.length) {
+					var code = i >= n ? 6 : 7;
+					progressChars[i] = String.fromCharCode(code);
 				}
-				nLast = n;
 				progress.text = progressChars.join("");
 				text.updateText(progress);
+				nLast = n;
 			}
 		}
 	}
