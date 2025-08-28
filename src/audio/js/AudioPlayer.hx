@@ -22,7 +22,7 @@ class AudioPlayer {
 	var node:AudioWorkletNode;
 	var micromod:MicromodSource;
 	var bufferSize:Int = 0;
-	var buffersProcessed:Int = 0;
+	var samplesProcessed:Int = 0;
 	var feeder:Timer;
 	var isInitialized:Bool = false;
 	var phase:Float = 0;
@@ -30,17 +30,11 @@ class AudioPlayer {
 
 	function new():Void {
 		bufferSize = 1024;
-		buffersProcessed = 0;
 		audioContext = new AudioWorkletContext();
 
 		var blob = new Blob([Processor.code], {type: "application/javascript"});
 		var url = URL.createObjectURL(blob);
 		audioContext.audioWorklet.addModule(url);
-
-		// delay the next part because the worklet will fail when audio-stream-processor is not finished loading
-		// Timer.delay(() -> {
-		// 	initAudioWorkletNode();
-		// }, 2000);
 	}
 
 	function initAudioWorkletNode() {
@@ -67,6 +61,7 @@ class AudioPlayer {
 					generateAndSendBuffer();
 				}
 			} else if (event.data.type == 'bufferStatus') {
+				// debug
 				// trace('Buffer queue: ${event.data.queueLength}, Samples: ${event.data.samplesProcessed}, Silent: ${event.data.silentSamples}');
 			}
 		}
@@ -76,18 +71,13 @@ class AudioPlayer {
 
 		isInitialized = true;
 		trace('AudioWorklet stream player initialized (inline processor)');
-		// trace('Connected to destination, gain: ${this.gainNode.gain.value}');
 	}
 
 	function generateAndSendBuffer() {
-		// if (!isInitialized || node == null) {
-		// 	return;
-		// }
+		samplesProcessed += bufferSize;
 		var buffL = new Float32Array(bufferSize);
 		var buffR = new Float32Array(bufferSize);
 		micromod.getAudio(buffL, buffR, bufferSize);
-		// generateTestBuffer(buffL, buffR, bufferSize);
-
 		streamAudioData(buffL, buffR);
 	}
 
@@ -202,8 +192,8 @@ class AudioPlayer {
 		return bufferSize;
 	}
 
-	function getBuffersProcessed():Int {
-		return buffersProcessed;
+	function getSamplesProcessed():Int {
+		return samplesProcessed;
 	}
 
 	function testSimpleAudio() {

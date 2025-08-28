@@ -18,7 +18,7 @@ class Main extends App {
 		player.setAudioSource(new SineSource(player.getSamplingRate()));
 
 		var lineHeight = Std.int(this.text.defaultOptions.letterHeight + this.text.defaultOptions.letterHeight/4);
-		var x = 180;
+		var x = space * 9;
 		var y = lineHeight;
 
 		var writeLine:(line:String, title:String) -> Text = (line, title) -> {
@@ -82,7 +82,7 @@ class Main extends App {
 					// size = writeLine("0", "BUFFER SI");
 
 					var duration = Micromod.calculate_song_duration();
-					writeLine(duration + "", "TOTAL SAMPLES:");
+					writeLine(duration + "",   "TOTAL SAMPLES:    ");
 
 					processed = writeLine("0", "SAMPLES PROCESSED:");
 
@@ -112,7 +112,7 @@ class Main extends App {
 
 	function _onUpdate(dt:Int):Void {
 		if (processed != null) {
-			processed.text = player.getBuffersProcessed() + "";
+			processed.text = player.getSamplesProcessed() + "";
 			text.updateText(processed);
 
 			// size.text = player.getBufferSize() + "";

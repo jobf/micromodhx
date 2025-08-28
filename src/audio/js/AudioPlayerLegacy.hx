@@ -54,7 +54,7 @@ class AudioPlayerLegacy {
 		return bufferSize;
 	}
 
-	function getBuffersProcessed():Int {
+	function getSamplesProcessed():Int {
 		return buffersProcessed;
 	}
 }

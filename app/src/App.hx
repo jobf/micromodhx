@@ -37,19 +37,15 @@ abstract class App extends Application {
 
 		var textOptions:TextOptions = {
 			fgColor: Color.WHITE,
-			// bgColor: bgColor,
 			letterWidth: 16,
 			letterHeight: 16,
-			// letterSpace: letterSpace,
-			// lineSpace: lineSpace,
-			// zIndex: zIndex
 		}
 
 		text = new TextProgram(new BMFontData(computer_modern), textOptions);
 		display.addProgram(text);
 
 		space = Std.int(textOptions.letterHeight + (textOptions.letterHeight / 8));
-		var x = space;
+		var x = space * 2;
 
 		add_button = (label, action) -> {
 			var text = new Text(x, yButton += space, label, {
