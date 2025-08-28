@@ -1,157 +1,8 @@
-import peote.view.text.TextElement;
-import peote.view.Color;
-import peote.view.text.Text;
-import peote.view.text.BMFontData;
+package app;
 
-import lime.ui.MouseButton;
-import peote.view.Display;
-import peote.view.text.TextProgram;
-import haxe.CallStack;
-import lime.app.Application;
-import peote.view.PeoteView;
-import peote.view.text.TextOptions;
 
-abstract class App extends Application {
-	var peoteView:PeoteView;
-	var display:Display;
-	var text:TextProgram;
-	var space:Int = 0;
-	var xButton:Int;
-	var yButton:Int = 0;
-
-	override function onWindowCreate():Void {
-		switch (window.context.type) {
-			case WEBGL, OPENGL, OPENGLES:
-				try {
-					init();
-				} catch (_) {
-					trace(CallStack.toString(CallStack.exceptionStack()), _);
-				}
-			default:
-				throw("Sorry, only works with OpenGL.");
-		}
-	}
-
-	function init() {
-		peoteView = new PeoteView(window);
-		display = new Display(0, 0, window.width, window.height);
-		peoteView.addDisplay(display);
-
-		var textOptions:TextOptions = {
-			fgColor: Color.WHITE,
-			letterWidth: 16,
-			letterHeight: 16,
-		}
-
-		text = new TextProgram(new BMFontData(scarlet), textOptions);
-		display.addProgram(text);
-
-		space = Std.int(textOptions.letterHeight + (textOptions.letterHeight / 8));
-		xButton = space * 2;
-
-		start();
-	}
-
-	function add_button(label:String, action:(text:Text, char:TextElement)->Void, x_:Int=0, y_:Int=0){
-
-		var x = x_ > 0 ? x_ : xButton;
-		var y = y_ > 0 ? y_ : yButton += space;
-
-		var text = new Text(x, y, label, {
-			fgColor: Color.WHITE,
-			bgColor: Color.GREEN3,
-		});
-		
-		text.onAction = action;
-		text.onOver = (text:Text, char:TextElement) -> text.changeBgA(0x8F);
-		text.onOut = (text:Text, char:TextElement) -> text.changeBgA(0xFF);
-
-		return this.text.add(text);
-	}
-
-	abstract function start():Void;
-
-	override function onMouseMove(x:Float, y:Float) {
-		#if (!html5)
-		lastMoveX = x;
-		lastMoveY = y;
-		isMouseMove = true;
-		#else
-		onMouseMoveFrameSynced(x, y);
-		#end
-	}
-
-	var lastOverIndex:Int = -1;
-	var lastDownIndex:Int = -1;
-	var lockDown = false;
-
-	inline function onMouseMoveFrameSynced(x:Float, y:Float):Void {
-		try {
-			var pickedElement = peoteView.getElementAt(x, y, display, text);
-			if (pickedElement != lastOverIndex) {
-				if (lastOverIndex >= 0) {
-					var elem = text.buff.getElement(lastOverIndex);
-					if (elem != null) {
-						elem.fgColor.a = 0xff;
-						var owner:Text = elem.owner;
-						if (owner.onOut != null) {
-							owner.onOut(owner, elem);
-							for (e in owner.elements) {
-								this.text.buff.updateElement(e);
-							}
-						}
-					}
-				}
-				if (pickedElement >= 0) {
-					var elem = text.buff.getElement(pickedElement);
-					if (elem != null) {
-						elem.fgColor.a = 0x80;
-						var owner:Text = elem.owner;
-						if (owner.onOver != null) {
-							owner.onOver(owner, elem);
-
-							for (e in owner.elements) {
-								this.text.buff.updateElement(e);
-							}
-						}
-					}
-				}
-				lastOverIndex = pickedElement;
-			}
-		} catch (_)
-			trace(CallStack.toString(CallStack.exceptionStack()), _);
-	}
-
-	override function onWindowLeave():Void {
-		if (lastDownIndex >= 0) {
-			var elem = text.buff.getElement(lastOverIndex);
-			if (elem != null) {
-				elem.fgColor.a = 0xff;
-				text.buff.updateElement(elem);
-				if (elem.owner.onOut != null) {
-					elem.owner.onOut(elem.owner, elem);
-				}
-			}
-		}
-	}
-
-	override function onMouseDown(x:Float, y:Float, button:MouseButton):Void {
-		try {
-			lastDownIndex = peoteView.getElementAt(x, y, display, text);
-			if (lastDownIndex >= 0) {
-				var elem = text.buff.getElement(lastDownIndex);
-				if (elem == null)
-					return;
-				if (elem.owner.onAction != null) {
-					elem.owner.onAction(elem.owner, elem);
-				}
-			}
-		} catch (_)
-			trace(CallStack.toString(CallStack.exceptionStack()), _);
-	}
-}
 var scarlet:Array<Int> = [
-	0x7e, 0x81, 0xa5, 0x81, 0xbd, 0x99, 0x81, 0x7e, 
+0x7e, 0x81, 0xa5, 0x81, 0xbd, 0x99, 0x81, 0x7e, 
 0x7e, 0xff, 0xdb, 0xff, 0xc3, 0xe7, 0xff, 0x7e, 
 0x6c, 0xfe, 0xfe, 0xfe, 0x7c, 0x38, 0x10, 0x00, 
 0x10, 0x38, 0x7c, 0xfe, 0x7c, 0x38, 0x10, 0x00, 
@@ -166,9 +17,9 @@ var scarlet:Array<Int> = [
 0x3c, 0x42, 0x42, 0x42, 0x3c, 0x18, 0x7e, 0x18, 
 0x3f, 0x21, 0x3f, 0x20, 0x20, 0x60, 0xe0, 0xc0, 
 0x3f, 0x21, 0x3f, 0x21, 0x23, 0x67, 0xe6, 0xc0, 
-0x18, 0xdb, 0x3c, 0xe7, 0xe7, 0x3c, 0xdb, 0x18, 
+0x00, 0xfc, 0xfc, 0xfc, 0xfc, 0xfc, 0x00, 0x00, 
 0x00, 0x60, 0x78, 0x7e, 0x78, 0x60, 0x00, 0x00, 
-0x00, 0x6c, 0x6c, 0x6c, 0x6c, 0x6c, 0x00, 0x00, 
+0x00, 0x66, 0x66, 0x66, 0x66, 0x66, 0x00, 0x00, 
 0x18, 0x3c, 0x7e, 0x18, 0x18, 0x7e, 0x3c, 0x18, 
 0x24, 0x24, 0x24, 0x24, 0x24, 0x00, 0x24, 0x00, 
 0x7f, 0x92, 0x92, 0x72, 0x12, 0x12, 0x12, 0x00, 

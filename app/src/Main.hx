@@ -1,5 +1,6 @@
 package;
 
+import app.Button;
 import peote.view.Color;
 import peote.view.text.Text;
 #if js
@@ -8,7 +9,7 @@ import audio.js.AudioPlayer;
 #end
 import micromod.Micromod;
 
-class Main extends App {
+class Main extends app.App {
 	var processed:Text;
 	var progress:Text;
 	var player:AudioPlayer;
@@ -19,26 +20,6 @@ class Main extends App {
 	public function start() {
 		player = new AudioPlayer();
 		player.setAudioSource(new SineSource(player.getSamplingRate()));
-
-		var lineHeight = Std.int(this.text.defaultOptions.letterHeight + this.text.defaultOptions.letterHeight / 4);
-		var x = space * 9;
-		var y = lineHeight;
-
-		var writeLine:(line:String, title:String) -> Text = (line, title) -> {
-			// add title
-			text.add(new Text(x, y, title, {
-				fgColor: Color.GREEN3,
-			}));
-
-			// add line
-			var space = title.length == 0 ? 0 : 1;
-			var xLabel = this.text.defaultOptions.letterWidth * (title.length + space) + x;
-			var line = text.add(new Text(xLabel, y, line));
-			y += lineHeight;
-
-			// return line
-			line;
-		}
 
 		writeLine("drop mod on screen", "");
 
@@ -58,36 +39,36 @@ class Main extends App {
 
 					/** print mod data*/
 
-					y = lineHeight;
-					yButton = space;
+					yLine = lineHeight;
 					text.buff.clear();
 
-					add_button(" PLAY ", (text, char) -> {
+					var buttonGap = Std.int(lineHeight * 3.5);
+					add_button(' ${String.fromCharCode(16)} ', (text, char) -> {
 						play();
-					});
+					}, lineHeight, yLine);
+					xLine += buttonGap;
+					writeLine(Micromod.get_name(), "NAME:");
+					xLine -= buttonGap;
 
-					add_button(" PAUS ", (text, char) -> {
+					add_button(' ${String.fromCharCode(17)} ', (text, char) -> {
 						if (player.isPlaying) {
 							player.pause();
 						} else {
 							player.resume();
 						}
-					});
-
-					add_button(" STOP ", (text, char) -> {
-						stop();
-					});
-
-					writeLine(Micromod.get_name(), "NAME:");
-					// size = writeLine("0", "BUFFER SI");
-
+					}, lineHeight, yLine);
+					xLine += buttonGap;
 					duration = Micromod.calculate_song_duration();
 					writeLine(duration + "", "TOTAL SAMPLES:    ");
+					xLine -= buttonGap;
 
+					add_button(' ${String.fromCharCode(15)} ', (text, char) -> {
+						stop();
+					}, lineHeight, yLine);
+					xLine += buttonGap;
 					processed = writeLine("0", "SAMPLES PROCESSED:");
-
-					writeLine("", ""); // empty line
-
+					xLine -= buttonGap;
+					
 					// progress bar
 					resetProgressChars();
 					progress = add_button(progressChars.join(""), (text, char) -> {
@@ -102,8 +83,9 @@ class Main extends App {
 						if (!player.isPlaying) {
 							play();
 						}
-					});
+					}, lineHeight, yLine);
 
+					// writeLine("", ""); // empty line
 					writeLine("", ""); // empty line
 
 					writeLine("", "Instruments ...");
@@ -127,6 +109,21 @@ class Main extends App {
 				reader.readAsArrayBuffer(list.item(0));
 			}
 		});
+	}
+
+	function writeLine(line:String, title:String):Text {
+		// add title
+		text.add(new Text(xLine, yLine, title, {
+			fgColor: Color.GREEN3,
+		}));
+
+		// add line
+		var space = title.length == 0 ? 0 : 1;
+		var xLabel = this.text.defaultOptions.letterWidth * (title.length + space) + xLine;
+		var line = text.add(new Text(xLabel, yLine, line));
+		yLine += lineHeight;
+
+		return line;
 	}
 
 	function resetProgressChars():Void {
@@ -170,5 +167,12 @@ class Main extends App {
 		resetProgressChars();
 		progress.text = progressChars.join("");
 		text.updateText(progress);
+	}
+}
+
+class Play extends Button{
+	public function new(x:Int, y:Int, )
+	{
+		super(x, y, String.fromCharCode(16));
 	}
 }
