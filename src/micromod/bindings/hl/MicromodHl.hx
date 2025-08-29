@@ -1,5 +1,7 @@
 package micromod.bindings.hl;
 
+import audio.IMicromodSource;
+
 @:hlNative("micromodHl") extern class C {
 	static function get_version():hl.Bytes;
 
@@ -42,5 +44,18 @@ class MicromodHl {
 
 	public static function get_audio(output_buffer:haxe.io.Bytes, sample_count:Int) {
 		C.get_audio(output_buffer, sample_count);
+	}
+	
+	public static function set_position(pos:Int) {
+		// todo
+		// C.seek(pos);
+	}
+
+	public static function get_name():String{
+		return "todo - get hl name";
+	}
+
+	public static function get_source():IMicromodSource{
+		return null;
 	}
 }

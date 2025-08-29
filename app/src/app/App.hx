@@ -21,6 +21,9 @@ abstract class App extends Application {
 	var xLine:Int = 0;
 	var yLine:Int = 0;
 	var lineHeight:Int;
+	var lastMoveX:Float;
+	var lastMoveY:Float;
+	var isMouseMove:Bool;
 
 
 	override function onWindowCreate():Void {
@@ -79,7 +82,7 @@ abstract class App extends Application {
 	abstract function start():Void;
 
 	override function onMouseMove(x:Float, y:Float) {
-		#if (!html5)
+		#if (!js)
 		lastMoveX = x;
 		lastMoveY = y;
 		isMouseMove = true;

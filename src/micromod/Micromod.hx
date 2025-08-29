@@ -1,6 +1,7 @@
 package micromod;
 
 import haxe.io.Bytes;
+import audio.IAudioPlayer;
 
 #if hl
 import micromod.bindings.hl.MicromodHl as MicromodHx;
@@ -58,26 +59,25 @@ class Micromod {
 		return module;
 	}
 
-	public static function get_audio(output_buffer:Bytes, sample_count:Int) {
-		MicromodHx.get_audio(output_buffer, sample_count);
-	}
+	// public static function get_audio(output_buffer:Bytes, sample_count:Int) {
+	// 	MicromodHx.get_audio(output_buffer, sample_count);
+	// }
 	#end
 
-	#if js
-	public static function get_audio(player:AudioPlayer){
-		@:privateAccess
-		player.setAudioSource(MicromodHx.micromod);
+	public static function get_audio(player:IAudioPlayer){
+		player.setAudioSource(MicromodHx.get_source());
 	}
+
+	#if js
+	// public static function get_audio(player:IAudioPlayer){
+	// 	@:privateAccess
+	// 	player.setAudioSource(MicromodHx.micromod);
+	// }
 	#end
 
 	public static function initialise(module_data:ModuleFormat, sample_rate:Int):String {
 		var errorMessage = "";
 
-		#if sys
-		MicromodHx.initialise();
-		#end
-
-		#if html5
 		try {
 			MicromodHx.initialise(module_data, sample_rate);
 			isInitialised = true;
@@ -86,7 +86,6 @@ class Micromod {
 			isInitialised = false;
 			errorMessage = e.message;
 		}
-		#end
 
 		return errorMessage;
 	}

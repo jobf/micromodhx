@@ -1,6 +1,8 @@
 package micromod.bindings.js;
 
-import js.lib.Float32Array;
+import audio.IMicromodSource;
+// import js.lib.Float32Array;
+import haxe.io.Float32Array;
 
 @:native("Module") extern class Module {
 	function new(data:js.lib.Int8Array):Void;
@@ -13,14 +15,9 @@ import js.lib.Float32Array;
 	var instrumentName(default, null):String;
 }
 
-interface MicromodSource
-{
-	function calculateSongDuration():Int;
-	function getSamplingRate():Float;
-	function getAudio(leftBuf:Float32Array, rightBuf:Float32Array, count:Int):Void;
-}
 
-@:native("Micromod") extern class Micromod implements MicromodSource {
+
+@:native("Micromod") extern class Micromod implements IMicromodSource {
 	function new(module:Module, sampleRate:Int):Void;
 	function getVersion():String;
 	function getSamplingRate():Float;
@@ -70,5 +67,9 @@ class MicromodJs {
 
 	static function get_name():String{
 		return module.songName;
+	}
+
+	static function get_source():IMicromodSource{
+		return micromod;
 	}
 }

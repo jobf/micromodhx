@@ -3,10 +3,12 @@ package;
 import peote.view.Color;
 import peote.view.text.Text;
 import micromod.Micromod;
-
 #if js
 import js.html.FileList;
 import audio.js.AudioPlayer;
+#end
+#if sys
+import audio.lime.AudioPlayer;
 #end
 
 class Main extends app.App {
@@ -29,107 +31,112 @@ class Main extends app.App {
 		window.onDropFile.add((fileList) -> {
 			// trace(fileList);
 			resetProgressChars();
+
+			#if js
 			var list:js.html.FileList = cast fileList;
 			if (list.length > 0) {
 				var reader = new js.html.FileReader();
 				reader.onloadend = () -> {
 					/** load mod data*/
-
 					var data:js.lib.Int8Array = new js.lib.Int8Array(reader.result);
-
-					var error = Micromod.initialise(data, Std.int(player.getSamplingRate()));
-					if(error.length > 0){
-						writeLine(error, "Error:");
-						return;
-					}
-
-					Micromod.get_audio(player);
-
-					/** print mod data*/
-
-					yLine = lineHeight;
-					text.buff.clear();
-					player.samplesProcessed = 0;
-
-					var buttonGap = Std.int(lineHeight * 3.5);
-
-					// play button
-					add_button(' ${String.fromCharCode(16)} ', (text, char) -> {
-						play();
-					}, lineHeight, yLine);
-
-					// module name
-					xLine += buttonGap;
-					writeLine(Micromod.get_name(), "NAME:");
-					xLine -= buttonGap;
-					
-					// pause button
-					add_button(' ${String.fromCharCode(17)} ', (text, char) -> {
-						if (player.isPlaying) {
-							player.pause();
-						} else {
-							player.resume();
-						}
-					}, lineHeight, yLine);
-
-					// total samples
-					xLine += buttonGap;
-					totalSamples = Micromod.calculate_song_duration();
-					var total = writeLine(totalSamples + "", "TOTAL SAMPLES:    ");
-					xLine -= buttonGap;
-
-					// stop button
-					add_button(' ${String.fromCharCode(15)} ', (text, char) -> {
-						stop();
-					}, lineHeight, yLine);
-
-					// processed samples
-					xLine += buttonGap;
-					processed = writeLine("0", "SAMPLES PROCESSED:");
-					var end = total.elements[total.elements.length - 1];
-					xLine = end.x + (end.w * 2);
-					yLine -= lineHeight;
-					seconds = writeLine(Math.ceil(totalSamples / player.getSamplingRate()) + "", "SECONDS REMAINING:");
-					xLine = lineHeight;
-
-					// progress bar
-					resetProgressChars();
-					progress = add_button(progressChars.join(""), (text, char) -> {
-						var index = text.elements.indexOf(char);
-						trace(index);
-						var completion = index / progressChars.length;
-						var pos = Math.floor(completion * totalSamples);
-						Micromod.set_position(pos);
-						player.samplesProcessed = pos;
-						resetProgressChars();
-						nLast = Math.floor(completion) - 1;
-						if (!player.isPlaying) {
-							play();
-						}
-					}, lineHeight, yLine);
-
-					writeLine("", ""); // empty line
-
-					// instruments
-					for (i in 1...17) {
-						var instrument = i;
-						var label = StringTools.lpad('$instrument', "0", 2);
-						var a = StringTools.rpad('$label: ' + Micromod.get_string(instrument), " ", 30);
-
-						instrument += 16;
-
-						var b = "";
-						if (instrument <= 0x1f) {
-							var label = StringTools.lpad('$instrument', "0", 2);
-							b = StringTools.rpad('$label: ' + Micromod.get_string(instrument), " ", 30);
-						}
-
-						writeLine(a + b, "");
-					}
+					loadModule(data);
 				};
 				reader.readAsArrayBuffer(list.item(0));
 			}
+			#end
 		});
+	}
+
+	function loadModule(data:ModuleFormat) {
+		var error = Micromod.initialise(data, Std.int(player.getSamplingRate()));
+		if (error.length > 0) {
+			writeLine(error, "Error:");
+			return;
+		}
+
+		Micromod.get_audio(player);
+
+		/** print mod data*/
+
+		yLine = lineHeight;
+		text.buff.clear();
+		player.samplesProcessed = 0;
+
+		var buttonGap = Std.int(lineHeight * 3.5);
+
+		// play button
+		add_button(' ${String.fromCharCode(16)} ', (text, char) -> {
+			play();
+		}, lineHeight, yLine);
+
+		// module name
+		xLine += buttonGap;
+		writeLine(Micromod.get_name(), "NAME:");
+		xLine -= buttonGap;
+
+		// pause button
+		add_button(' ${String.fromCharCode(17)} ', (text, char) -> {
+			if (player.isPlaying) {
+				player.pause();
+			} else {
+				player.resume();
+			}
+		}, lineHeight, yLine);
+
+		// total samples
+		xLine += buttonGap;
+		totalSamples = Micromod.calculate_song_duration();
+		var total = writeLine(totalSamples + "", "TOTAL SAMPLES:    ");
+		xLine -= buttonGap;
+
+		// stop button
+		add_button(' ${String.fromCharCode(15)} ', (text, char) -> {
+			stop();
+		}, lineHeight, yLine);
+
+		// processed samples
+		xLine += buttonGap;
+		processed = writeLine("0", "SAMPLES PROCESSED:");
+		var end = total.elements[total.elements.length - 1];
+		xLine = end.x + (end.w * 2);
+		yLine -= lineHeight;
+		seconds = writeLine(Math.ceil(totalSamples / player.getSamplingRate()) + "", "SECONDS REMAINING:");
+		xLine = lineHeight;
+
+		// progress bar
+		resetProgressChars();
+		progress = add_button(progressChars.join(""), (text, char) -> {
+			var index = text.elements.indexOf(char);
+			trace(index);
+			var completion = index / progressChars.length;
+			var pos = Math.floor(completion * totalSamples);
+			Micromod.set_position(pos);
+			player.samplesProcessed = pos;
+			resetProgressChars();
+			nLast = Math.floor(completion) - 1;
+			if (!player.isPlaying) {
+				play();
+			}
+		}, lineHeight, yLine);
+
+		writeLine("", ""); // empty line
+
+		// instruments
+		for (i in 1...17) {
+			var instrument = i;
+			var label = StringTools.lpad('$instrument', "0", 2);
+			var a = StringTools.rpad('$label: ' + Micromod.get_string(instrument), " ", 30);
+
+			instrument += 16;
+
+			var b = "";
+			if (instrument <= 0x1f) {
+				var label = StringTools.lpad('$instrument', "0", 2);
+				b = StringTools.rpad('$label: ' + Micromod.get_string(instrument), " ", 30);
+			}
+
+			writeLine(a + b, "");
+		}
 	}
 
 	function writeLine(line:String, title:String):Text {
@@ -156,7 +163,7 @@ class Main extends app.App {
 			var samplesProcessed = player.getSamplesProcessed();
 			processed.text = samplesProcessed + "";
 			text.updateText(processed);
-			
+
 			seconds.text = Math.ceil((totalSamples - samplesProcessed) / player.getSamplingRate()) + "";
 			text.updateText(seconds);
 

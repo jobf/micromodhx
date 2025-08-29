@@ -1,9 +1,13 @@
 package audio.js;
 
 import haxe.Timer;
+import haxe.io.Float32Array;
+import audio.IMicromodSource;
+import audio.IAudioPlayer;
+
+#if js
 import js.html.audio.AudioWorkletGlobalScope;
 import js.html.audio.AudioDestinationNode;
-#if js
 import audio.js.AudioWorkletContext;
 import js.html.audio.AudioContextState;
 import js.html.audio.AudioWorkletNodeOptions; // .AudioWorkletNode;
@@ -11,16 +15,16 @@ import js.html.audio.AudioProcessingEvent;
 import js.html.audio.AudioWorkletProcessor;
 import js.html.Blob;
 import js.html.URL;
-import js.lib.Float32Array;
+// import js.lib.Float32Array;
 import micromod.bindings.js.MicromodJs.Micromod;
-import micromod.bindings.js.MicromodJs.MicromodSource;
+// import micromod.bindings.js.MicromodJs.IMicromodSource;
 #end
 
 @:publicFields
-class AudioPlayer {
+class AudioPlayer implements IAudioPlayer {
 	var audioContext:AudioWorkletContext;
 	var node:AudioWorkletNode;
-	var micromod:MicromodSource;
+	var micromod:IMicromodSource;
 	var bufferSize:Int = 0;
 	var samplesProcessed:Int = 0;
 	var totalSamples:Int = 0;
@@ -188,7 +192,7 @@ class AudioPlayer {
 		trace('Audio playback resumed');
 	}
 
-	function setAudioSource(micromod:MicromodSource):Void {
+	function setAudioSource(micromod:IMicromodSource):Void {
 		this.micromod = micromod;
 		totalSamples = micromod.calculateSongDuration();
 		isInitialized = true;
@@ -214,45 +218,5 @@ class AudioPlayer {
 
 		osc.start();
 		Timer.delay(() -> osc.stop(), 1000);
-	}
-}
-
-class SineSource implements MicromodSource {
-	var sampleRate:Float;
-	var leftFreq:Float = 440;
-	var rightFreq:Float = 220;
-	var amplitude = 1.0;
-	var leftPhase:Float = 0;
-	var rightPhase:Float = 0;
-	var sampleIndex:Int = 0;
-
-	public function new(samplingRate:Float) {
-		sampleRate = samplingRate;
-	}
-
-	public function getSamplingRate():Float {
-		return sampleRate;
-	}
-
-	public function calculateSongDuration():Int {
-		return Std.int(sampleRate * 5);
-	}
-
-	public function getAudio(leftBuf:Float32Array, rightBuf:Float32Array, numSamples:Int):Void {
-		var leftPhaseIncrement = (2 * Math.PI * leftFreq) / this.sampleRate;
-		var rightPhaseIncrement = (2 * Math.PI * rightFreq) / this.sampleRate;
-
-		for (i in 0...numSamples) {
-			leftBuf[i] = Math.sin(this.leftPhase) * amplitude;
-			rightBuf[i] = Math.sin(this.rightPhase) * amplitude;
-
-			this.leftPhase += leftPhaseIncrement;
-			this.rightPhase += rightPhaseIncrement;
-
-			if (this.leftPhase > 2 * Math.PI)
-				this.leftPhase -= 2 * Math.PI;
-			if (this.rightPhase > 2 * Math.PI)
-				this.rightPhase -= 2 * Math.PI;
-		}
 	}
 }
