@@ -16,6 +16,7 @@ class Main extends app.App {
 	var progressChars:Array<String>;
 	var totalSamples:Int;
 	var nLast:Int = -1;
+	var seconds:Text;
 
 	public function start() {
 		player = new AudioPlayer();
@@ -74,7 +75,7 @@ class Main extends app.App {
 					// total samples
 					xLine += buttonGap;
 					totalSamples = Micromod.calculate_song_duration();
-					writeLine(totalSamples + "", "TOTAL SAMPLES:    ");
+					var total = writeLine(totalSamples + "", "TOTAL SAMPLES:    ");
 					xLine -= buttonGap;
 
 					// stop button
@@ -85,7 +86,11 @@ class Main extends app.App {
 					// processed samples
 					xLine += buttonGap;
 					processed = writeLine("0", "SAMPLES PROCESSED:");
-					xLine -= buttonGap;
+					var end = total.elements[total.elements.length - 1];
+					xLine = end.x + (end.w * 2);
+					yLine -= lineHeight;
+					seconds = writeLine(Math.ceil(totalSamples / player.getSamplingRate()) + "", "SECONDS REMAINING:");
+					xLine = lineHeight;
 
 					// progress bar
 					resetProgressChars();
@@ -151,6 +156,9 @@ class Main extends app.App {
 			var samplesProcessed = player.getSamplesProcessed();
 			processed.text = samplesProcessed + "";
 			text.updateText(processed);
+			
+			seconds.text = Math.ceil((totalSamples - samplesProcessed) / player.getSamplingRate()) + "";
+			text.updateText(seconds);
 
 			var completion = samplesProcessed / totalSamples;
 			var n = Math.floor(progressChars.length * completion);
