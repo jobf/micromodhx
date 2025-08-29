@@ -1,27 +1,29 @@
 package;
 
-import app.Button;
 import peote.view.Color;
 import peote.view.text.Text;
+import micromod.Micromod;
+
 #if js
 import js.html.FileList;
 import audio.js.AudioPlayer;
 #end
-import micromod.Micromod;
 
 class Main extends app.App {
 	var processed:Text;
 	var progress:Text;
 	var player:AudioPlayer;
 	var progressChars:Array<String>;
-	var duration:Int;
+	var totalSamples:Int;
 	var nLast:Int = -1;
 
 	public function start() {
 		player = new AudioPlayer();
-		player.setAudioSource(new SineSource(player.getSamplingRate()));
+		// for debug
+		// player.setAudioSource(new SineSource(player.getSamplingRate()));
+		// window.onMouseDown.add((x, y, button) -> if(player.isPlaying) player.stop() else player.play());
 
-		writeLine("drop mod on screen", "");
+		writeLine("drop module to load . . .", "");
 
 		window.onDropFile.add((fileList) -> {
 			// trace(fileList);
@@ -41,15 +43,21 @@ class Main extends app.App {
 
 					yLine = lineHeight;
 					text.buff.clear();
+					player.samplesProcessed = 0;
 
 					var buttonGap = Std.int(lineHeight * 3.5);
+
+					// play button
 					add_button(' ${String.fromCharCode(16)} ', (text, char) -> {
 						play();
 					}, lineHeight, yLine);
+
+					// module name
 					xLine += buttonGap;
 					writeLine(Micromod.get_name(), "NAME:");
 					xLine -= buttonGap;
-
+					
+					// pause button
 					add_button(' ${String.fromCharCode(17)} ', (text, char) -> {
 						if (player.isPlaying) {
 							player.pause();
@@ -57,25 +65,30 @@ class Main extends app.App {
 							player.resume();
 						}
 					}, lineHeight, yLine);
+
+					// total samples
 					xLine += buttonGap;
-					duration = Micromod.calculate_song_duration();
-					writeLine(duration + "", "TOTAL SAMPLES:    ");
+					totalSamples = Micromod.calculate_song_duration();
+					writeLine(totalSamples + "", "TOTAL SAMPLES:    ");
 					xLine -= buttonGap;
 
+					// stop button
 					add_button(' ${String.fromCharCode(15)} ', (text, char) -> {
 						stop();
 					}, lineHeight, yLine);
+
+					// processed samples
 					xLine += buttonGap;
 					processed = writeLine("0", "SAMPLES PROCESSED:");
 					xLine -= buttonGap;
-					
+
 					// progress bar
 					resetProgressChars();
 					progress = add_button(progressChars.join(""), (text, char) -> {
 						var index = text.elements.indexOf(char);
 						trace(index);
 						var completion = index / progressChars.length;
-						var pos = Math.floor(completion * duration);
+						var pos = Math.floor(completion * totalSamples);
 						Micromod.set_position(pos);
 						player.samplesProcessed = pos;
 						resetProgressChars();
@@ -85,25 +98,23 @@ class Main extends app.App {
 						}
 					}, lineHeight, yLine);
 
-					// writeLine("", ""); // empty line
 					writeLine("", ""); // empty line
 
-					writeLine("", "Instruments ...");
-
+					// instruments
 					for (i in 1...17) {
 						var instrument = i;
 						var label = StringTools.lpad('$instrument', "0", 2);
-						var a = '$label: ' + Micromod.get_string(instrument);
+						var a = StringTools.rpad('$label: ' + Micromod.get_string(instrument), " ", 30);
 
 						instrument += 16;
 
 						var b = "";
 						if (instrument <= 0x1f) {
 							var label = StringTools.lpad('$instrument', "0", 2);
-							b = '$label: ' + Micromod.get_string(instrument);
+							b = StringTools.rpad('$label: ' + Micromod.get_string(instrument), " ", 30);
 						}
 
-						writeLine('$a $b', "");
+						writeLine(a + b, "");
 					}
 				};
 				reader.readAsArrayBuffer(list.item(0));
@@ -127,7 +138,7 @@ class Main extends app.App {
 	}
 
 	function resetProgressChars():Void {
-		progressChars = [for (n in 0...50) String.fromCharCode(6)];
+		progressChars = [for (n in 0...60) String.fromCharCode(6)];
 	}
 
 	function _onUpdate(dt:Int):Void {
@@ -136,7 +147,7 @@ class Main extends app.App {
 			processed.text = samplesProcessed + "";
 			text.updateText(processed);
 
-			var completion = samplesProcessed / duration;
+			var completion = samplesProcessed / totalSamples;
 			var n = Math.floor(progressChars.length * completion);
 			if (nLast != n) {
 				for (i in 0...progressChars.length) {
@@ -167,12 +178,5 @@ class Main extends app.App {
 		resetProgressChars();
 		progress.text = progressChars.join("");
 		text.updateText(progress);
-	}
-}
-
-class Play extends Button{
-	public function new(x:Int, y:Int, )
-	{
-		super(x, y, String.fromCharCode(16));
 	}
 }

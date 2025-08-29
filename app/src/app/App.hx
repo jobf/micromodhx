@@ -38,7 +38,9 @@ abstract class App extends Application {
 
 	function init() {
 		peoteView = new PeoteView(window);
-		display = new Display(0, 0, window.width, window.height);
+		var bg = Color.BLUE1;
+		bg.valueHSV = 20 / 256;
+		display = new Display(0, 0, window.width, window.height, bg);
 		peoteView.addDisplay(display);
 
 		var textOptions:TextOptions = {
@@ -47,7 +49,7 @@ abstract class App extends Application {
 			letterHeight: 16,
 		}
 
-		var font = new BMFontData(Font.scarlet);
+		var font = new BMFontData(Font.halfling);
 		text = new TextProgram(font, textOptions);
 		display.addProgram(text);
 
