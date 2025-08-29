@@ -36,7 +36,12 @@ class Main extends app.App {
 
 					var data:js.lib.Int8Array = new js.lib.Int8Array(reader.result);
 
-					Micromod.initialise(data, Std.int(player.getSamplingRate()));
+					var error = Micromod.initialise(data, Std.int(player.getSamplingRate()));
+					if(error.length > 0){
+						writeLine(error, "Error:");
+						return;
+					}
+
 					Micromod.get_audio(player);
 
 					/** print mod data*/

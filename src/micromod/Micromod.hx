@@ -70,16 +70,25 @@ class Micromod {
 	}
 	#end
 
-	public static function initialise(module_data:ModuleFormat, sample_rate:Int) {
+	public static function initialise(module_data:ModuleFormat, sample_rate:Int):String {
+		var errorMessage = "";
+
 		#if sys
 		MicromodHx.initialise();
 		#end
 
 		#if html5
-		MicromodHx.initialise(module_data, sample_rate);
+		try {
+			MicromodHx.initialise(module_data, sample_rate);
+			isInitialised = true;
+		}
+		catch(e) {
+			isInitialised = false;
+			errorMessage = e.message;
+		}
 		#end
 
-		isInitialised = true;
+		return errorMessage;
 	}
 
 	public static function get_string(instrument:Int) {
