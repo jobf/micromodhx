@@ -5,7 +5,7 @@ import lime.media.openal.AL;
 
 class AudioPlayer implements IAudioPlayer {
 	public var isPlaying:Bool = false;
-	public var samplesProcessed:Int;
+	public var samplesProcessed:Int = 0;
 
 	var sampleRate:Int;
 
