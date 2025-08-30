@@ -2,19 +2,16 @@ package micromod;
 
 import haxe.io.Bytes;
 import audio.IAudioPlayer;
+
 #if hl
 import micromod.bindings.hl.MicromodHl as MicromodHx;
 typedef ModuleFormat = haxe.io.Bytes;
 #end
+
 #if js
 import audio.js.AudioPlayer;
 import micromod.bindings.js.MicromodJs as MicromodHx;
 typedef ModuleFormat = js.lib.Int8Array;
-#end
-#if cpp
-import micromod.bindings.hxcpp.MicromodHxcpp as MicromodHx;
-
-typedef ModuleFormat = haxe.io.Bytes;
 #end
 
 class Micromod {
@@ -23,13 +20,10 @@ class Micromod {
 	#if sys
 	static function read_file(path:String, to:Bytes, length:Int):Int {
 		var count = -1;
-		#if sys
 		var file = sys.io.File.read(path);
 		var pos = 0;
 		count = file.readBytes(to, pos, length);
 		file.close();
-		#end
-
 		return count;
 	}
 

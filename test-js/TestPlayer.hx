@@ -1,3 +1,5 @@
+import audio.js.AudioPlayer;
+
 import micromod.bindings.js.MicromodJs.Micromod as MicromodJs;
 import micromod.bindings.js.MicromodJs.Module;
 import js.html.FileReader;

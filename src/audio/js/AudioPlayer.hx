@@ -1,23 +1,13 @@
 package audio.js;
 
-import haxe.Timer;
 import haxe.io.Float32Array;
 import audio.IMicromodSource;
 import audio.IAudioPlayer;
 
 #if js
-import js.html.audio.AudioWorkletGlobalScope;
-import js.html.audio.AudioDestinationNode;
 import audio.js.AudioWorkletContext;
-import js.html.audio.AudioContextState;
-import js.html.audio.AudioWorkletNodeOptions; // .AudioWorkletNode;
-import js.html.audio.AudioProcessingEvent;
-import js.html.audio.AudioWorkletProcessor;
 import js.html.Blob;
 import js.html.URL;
-// import js.lib.Float32Array;
-import micromod.bindings.js.MicromodJs.Micromod;
-// import micromod.bindings.js.MicromodJs.IMicromodSource;
 #end
 
 @:publicFields
@@ -28,7 +18,6 @@ class AudioPlayer implements IAudioPlayer {
 	var bufferSize:Int = 0;
 	var samplesProcessed:Int = 0;
 	var totalSamples:Int = 0;
-	var feeder:Timer;
 	var isInitialized:Bool = false;
 	var phase:Float = 0;
 	var isPlaying:Bool = false;
@@ -94,9 +83,6 @@ class AudioPlayer implements IAudioPlayer {
 		if (audioContext.state == SUSPENDED) {
 			trace('to do .. Resuming suspended audio context...');
 			audioContext.resume();
-			//   audioContext.resume().then(() => {
-			// 	 trace('Audio context resumed, state: ${this.audioContext.state}');
-			//   });
 		}
 
 		node.port.postMessage({
@@ -105,32 +91,7 @@ class AudioPlayer implements IAudioPlayer {
 			rightBuffer: buffR,
 		});
 	}
-
-	function generateTestBuffer(buffL:Float32Array, buffR:Float32Array, length:Int = 1024) {
-		var frequency = 220; // A4 note
-		var sampleRate = audioContext.sampleRate;
-
-		// Keep track of phase to maintain continuity between buffers
-
-		for (i in 0...length) {
-			var leftSample = Math.sin(phase) * 0.3; // Left channel
-			var rightSample = Math.sin(phase * 1.5) * 0.3; // Right channel (slightly different frequency)
-
-			buffL[i] = leftSample; // Left channel
-			buffR[i] = rightSample; // Right channel
-
-			// buffer[i * 2] = leftSample; // Left channel
-			// buffer[i * 2 + 1] = rightSample; // Right channel
-
-			phase += 2 * Math.PI * frequency / sampleRate;
-
-			// Keep phase in reasonable range
-			if (phase > 2 * Math.PI * 1000) {
-				phase -= 2 * Math.PI * 1000;
-			}
-		}
-	}
-
+	
 	function getSamplingRate():Float {
 		return audioContext.sampleRate;
 	}
@@ -204,19 +165,5 @@ class AudioPlayer implements IAudioPlayer {
 
 	function getSamplesProcessed():Int {
 		return samplesProcessed;
-	}
-
-	function testSimpleAudio() {
-		var ctx = new AudioWorkletContext();
-		var osc = ctx.createOscillator();
-		var gain = ctx.createGain();
-
-		osc.connect(gain);
-		gain.connect(ctx.destination);
-		gain.gain.value = 0.1; // Low volume
-		osc.frequency.value = 440;
-
-		osc.start();
-		Timer.delay(() -> osc.stop(), 1000);
 	}
 }

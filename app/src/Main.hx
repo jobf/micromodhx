@@ -1,11 +1,13 @@
 package;
 
+import audio.IAudioPlayer;
 import peote.view.Color;
 import peote.view.text.Text;
 import micromod.Micromod;
 #if js
 import js.html.FileList;
 import audio.js.AudioPlayer;
+import audio.js.AudioPlayerLegacy;
 #end
 #if sys
 import audio.lime.AudioPlayer;
@@ -14,17 +16,27 @@ import audio.lime.AudioPlayer;
 class Main extends app.App {
 	var processed:Text;
 	var progress:Text;
-	var player:AudioPlayer;
+	var player:IAudioPlayer;
 	var progressChars:Array<String>;
 	var totalSamples:Int;
 	var nLast:Int = -1;
 	var seconds:Text;
 
 	public function start() {
+
 		player = new AudioPlayer();
+
+		#if js
+		var ctx = new audio.js.AudioWorkletContext();
+		if(ctx.audioWorklet == null){
+			// tra
+		}
+		player = new AudioPlayerLegacy();
+		#end
+
 		// for debug
-		// player.setAudioSource(new SineSource(player.getSamplingRate()));
-		// window.onMouseDown.add((x, y, button) -> if(player.isPlaying) player.stop() else player.play());
+		player.setAudioSource(new audio.IMicromodSource.SineSource(player.getSamplingRate()));
+		window.onMouseDown.add((x, y, button) -> if(player.isPlaying) player.stop() else player.play());
 
 		writeLine("drop module to load . . .", "");
 
@@ -54,9 +66,7 @@ class Main extends app.App {
 			return;
 		}
 
-		Micromod.get_audio(player);
-
-		/** print mod data*/
+		player.setAudioSource(Micromod.get_source());
 
 		yLine = lineHeight;
 		text.buff.clear();
