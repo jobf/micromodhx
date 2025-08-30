@@ -40,7 +40,7 @@ class MicromodJs {
 	}
 
 	static function initialise(data:js.lib.Int8Array, sampling_rate:Int) {
-		trace(data);
+		// trace(data);
 		module = new Module(data);
 		micromod = new Micromod(module, sampling_rate);
 	}

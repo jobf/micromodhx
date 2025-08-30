@@ -8,33 +8,38 @@ import micromod.bindings.js.MicromodJs.Micromod;
 #end
 
 @:publicFields
-class AudioPlayerLegacy implements IAudioPlayer{
+class AudioPlayerLegacy implements IAudioPlayer {
 	var audioContext:AudioContext;
 	var scriptProcessor:ScriptProcessorNode;
 	var micromod:Micromod;
+	var onaudioprocess:AudioProcessingEvent->Void;
+	
 	var bufferSize:Int = 0;
-	var onaudioprocess: AudioProcessingEvent->Void;
-	public var isPlaying:Bool;
-	public var samplesProcessed:Int;
-	
-	
-	
+	public var isPlaying:Bool = false;
+	public var samplesProcessed:Int = 0;
+
 	function new():Void {
 		audioContext = new AudioContext();
 		scriptProcessor = audioContext.createScriptProcessor(0, 0, 2);
-		bufferSize = 0;
-		samplesProcessed = 0;
-		onaudioprocess = (event:AudioProcessingEvent) -> {
-			samplesProcessed += event.outputBuffer.length;
-			var leftBuf = event.outputBuffer.getChannelData(0);
-			var rightBuf = event.outputBuffer.getChannelData(1);
-			// to do left buf
-			// micromod.getAudio(leftBuf, rightBuf, event.outputBuffer.length);
-		}
 	}
 
 	public function setAudioSource(source:IMicromodSource) {
-		// to do
+		onaudioprocess = (event:AudioProcessingEvent) -> {
+			if (isPlaying) {
+				samplesProcessed += event.outputBuffer.length;
+				var leftBuf:haxe.io.Float32Array = cast event.outputBuffer.getChannelData(0);
+				var rightBuf:haxe.io.Float32Array = cast event.outputBuffer.getChannelData(1);
+				source.getAudio(leftBuf, rightBuf, event.outputBuffer.length);
+			} else {
+				// Fill with silence when stopped
+				var leftBuf:haxe.io.Float32Array = cast event.outputBuffer.getChannelData(0);
+				var rightBuf:haxe.io.Float32Array = cast event.outputBuffer.getChannelData(1);
+				for (i in 0...leftBuf.length) {
+					leftBuf[i] = 0;
+					rightBuf[i] = 0;
+				}
+			}
+		}
 	}
 
 	function getSamplingRate():Float {
@@ -42,26 +47,28 @@ class AudioPlayerLegacy implements IAudioPlayer{
 	}
 
 	function play():Void {
+		isPlaying = true;
 		samplesProcessed = 0;
 		scriptProcessor.onaudioprocess = onaudioprocess;
 		scriptProcessor.connect(audioContext.destination);
 	}
 
 	function stop():Void {
+		isPlaying = false;
 		if (scriptProcessor.onaudioprocess != null) {
 			scriptProcessor.disconnect(audioContext.destination);
 			scriptProcessor.onaudioprocess = null;
 		}
 	}
-	
+
 	public function pause() {
- 		// to do
+		isPlaying = false;
 	}
-	
+
 	public function resume() {
- 		// to do
+		isPlaying = true;
 	}
-	
+
 	function getBufferSize():Int {
 		return bufferSize;
 	}

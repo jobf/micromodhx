@@ -7,8 +7,8 @@ import micromod.Micromod;
 #if js
 import js.html.FileList;
 import audio.js.AudioPlayer;
-import audio.js.AudioPlayerLegacy;
 #end
+
 #if sys
 import audio.lime.AudioPlayer;
 #end
@@ -23,20 +23,11 @@ class Main extends app.App {
 	var seconds:Text;
 
 	public function start() {
-
 		player = new AudioPlayer();
 
-		#if js
-		var ctx = new audio.js.AudioWorkletContext();
-		if(ctx.audioWorklet == null){
-			// tra
-		}
-		player = new AudioPlayerLegacy();
-		#end
-
 		// for debug
-		player.setAudioSource(new audio.IMicromodSource.SineSource(player.getSamplingRate()));
-		window.onMouseDown.add((x, y, button) -> if(player.isPlaying) player.stop() else player.play());
+		// player.setAudioSource(new audio.IMicromodSource.SineSource(player.getSamplingRate()));
+		// window.onMouseDown.add((x, y, button) -> if(player.isPlaying) player.stop() else player.play());
 
 		writeLine("drop module to load . . .", "");
 

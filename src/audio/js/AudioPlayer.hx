@@ -64,7 +64,7 @@ class AudioPlayer implements IAudioPlayer {
 		node.connect(this.audioContext.destination);
 
 		isInitialized = true;
-		trace('AudioWorklet stream player initialized (inline processor)');
+		trace('audio-stream-processor initialized');
 	}
 
 	function generateAndSendBuffer() {
