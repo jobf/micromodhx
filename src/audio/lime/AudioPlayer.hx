@@ -1,32 +1,33 @@
 package audio.lime;
 
-class AudioPlayer implements IAudioPlayer{
+import lime.media.openal.ALC;
+import lime.media.openal.AL;
+
+class AudioPlayer implements IAudioPlayer {
 	public var isPlaying:Bool = false;
 	public var samplesProcessed:Int;
-	public function new(){}
+
+	var sampleRate:Int;
+
+	public function new() {
+		sampleRate = 48000;
+	}
 
 	public function getSamplingRate():Float {
-		return 0;
+		return sampleRate;
 	}
 
 	public function getSamplesProcessed():Int {
 		return 0;
 	}
-	public function setAudioSource(source:IMicromodSource){
-		
-	}
 
-	public function play() {
-		
-	}
-	
-	public function stop() {
-		
-	}
+	public function setAudioSource(source:IMicromodSource) {}
 
-	public function pause() {
-	}
+	public function play() {}
 
-	public function resume() {
-	}
+	public function stop() {}
+
+	public function pause() {}
+
+	public function resume() {}
 }

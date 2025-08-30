@@ -27,8 +27,8 @@ class MicromodHl {
 		return C.calculate_mod_file_len(header);
 	}
 
-	public static function initialise(module:haxe.io.Bytes, length:Int):Int {
-		return C.initialise(module, length);
+	public static function initialise(module:haxe.io.Bytes, sampleRate:Int):Int {
+		return C.initialise(module, sampleRate);
 	}
 
 	public static function get_string(instrument:Int):String {
