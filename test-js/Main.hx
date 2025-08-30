@@ -1,3 +1,4 @@
+import audio.js.AudioPlayer;
 import js.Browser;
 import js.html.XMLHttpRequest;
 import js.lib.Int8Array;
@@ -24,7 +25,7 @@ function main() {
 		print_module_info();
 
 		Browser.window.addEventListener("click", event -> {
-			Micromod.get_audio(player);
+			// Micromod.get_audio(player);
 		});
 	}
 

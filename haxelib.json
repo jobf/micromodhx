@@ -1,0 +1,21 @@
+{
+	"name": "micromodhx",
+	"url": "https://https://github.com/jobf/micromodhx",
+	"license": "MIT",
+	"tags": [
+		"audio",
+		"mod",
+		"protracker"
+	],
+	"description": "Bindings for protracker mod playback.",
+	"version": "0.2.0",
+	"classPath": "src/",
+	"releasenote": "Unreleased.",
+	"contributors": [
+		"jobf"
+	],
+	"dependencies": {
+		"format": "3.8.0",
+		"hxcpp": "4.3.2"
+	}
+}

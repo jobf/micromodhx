@@ -54,9 +54,7 @@ class Main extends app.App {
 			return;
 		}
 
-		Micromod.get_audio(player);
-
-		/** print mod data*/
+		player.setAudioSource(Micromod.get_source());
 
 		yLine = lineHeight;
 		text.buff.clear();
