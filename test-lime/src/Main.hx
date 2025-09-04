@@ -1,27 +1,23 @@
 package;
 
-import audio.IAudioPlayer;
-import peote.view.Color;
-import peote.view.text.Text;
 import micromod.Micromod;
+import peote.view.text.Text;
 #if js
-// import js.html.FileList;
 import audio.js.AudioPlayer;
 #end
-
 #if sys
-// import AudioPlayer;
 import audio.lime.AudioPlayer;
 #end
 
 class Main extends app.App {
 	var processed:Text;
 	var progress:Text;
-	var player:IAudioPlayer;
+	var player:AudioPlayer;
 	var progressChars:Array<String>;
 	var totalSamples:Int;
 	var nLast:Int = -1;
 	var seconds:Text;
+	var instruments:Array<String>;
 
 	public function start() {
 		player = new AudioPlayer();
@@ -32,24 +28,17 @@ class Main extends app.App {
 
 		writeLine("drop module to load . . .", "");
 
-		window.onDropFile.add((fileList) -> {
-			// trace(fileList);
-			resetProgressChars();
+		window.onDropFile.add((drop) -> {
+			// trace(drop);
+			clear();
 
 			#if js
-			var list:js.html.FileList = cast fileList;
+			var list:js.html.FileList = cast drop;
 			if (list.length > 0) {
 				var file:js.html.File = list.item(0);
 				var reader = new js.html.FileReader();
 				reader.onloadend = () -> {
-					/** load mod data*/
-					if(isLHAFile(file.name)){
-						writeLine("LHA not supported, please extract first!", "Sorry!");
-						// var data = new UInt8Array(reader.result);
-						// lha ain't working now so show a message
-						// that is one serious side mission into wasm and all
-					}
-					else{
+					if (validate(file.name)) {
 						var module = new js.lib.Int8Array(reader.result);
 						loadModule(module);
 					}
@@ -59,25 +48,61 @@ class Main extends app.App {
 			#end
 
 			#if sys
-			var data = sys.io.File.getBytes(fileList);
-			loadModule(data);
+			var fileName = drop;
+			if (validate(fileName)) {
+				var data = sys.io.File.getBytes(fileName);
+				loadModule(data);
+			}
 			#end
 		});
 	}
 
+	function validate(fileName:String) {
+		if (isLHAFile(fileName)) {
+			writeLine("LHA not supported, please extract first!", "Sorry!");
+			return false;
+			// var data = new UInt8Array(reader.result);
+			// lha ain't working now so show a message
+			// that is one serious side mission into wasm and all
+		}
+		return true;
+	}
+
 	function loadModule(data:ModuleFormat) {
-		var error = Micromod.initialise(data, Std.int(48000));
-		// var error = Micromod.initialise(data, Std.int(player.getSamplingRate()));
+		var error = Micromod.initialise(data, Std.int(player.getSamplingRate()));
 		if (error.length > 0) {
 			writeLine(error, "Error:");
 			return;
 		}
 
 		player.setAudioSource(Micromod.get_source());
-
-		yLine = margin;
-		text.buff.clear();
 		player.samplesProcessed = 0;
+		totalSamples = Micromod.calculate_song_duration();
+
+		instruments = [
+			for (i in 1...17) {
+				var instrument = i;
+				var label = StringTools.lpad('$instrument', "0", 2);
+				var a = StringTools.rpad('$label' + Micromod.get_string(instrument), " ", 24);
+
+				instrument += 16;
+
+				var b = "";
+				if (instrument <= 0x1f) {
+					var label = StringTools.lpad('$instrument', "0", 2);
+					b = StringTools.rpad('$label' + Micromod.get_string(instrument), " ", 24);
+				}
+
+				a + b;
+			}
+		];
+
+		initUi();
+	}
+
+	function initUi():Void {
+		resetProgressChars();
+		initThemeChoice();
 
 		var buttonGap = Std.int(text.defaultOptions.letterWidth * 3.3);
 
@@ -102,7 +127,6 @@ class Main extends app.App {
 
 		// total samples
 		xLine += buttonGap;
-		totalSamples = Micromod.calculate_song_duration();
 		var total = writeLine(totalSamples + "", "TOTAL SAMPLES:    ");
 		xLine -= buttonGap;
 
@@ -138,23 +162,10 @@ class Main extends app.App {
 
 		writeLine("", ""); // empty line
 
-		// instruments
-		for (i in 1...17) {
-			var instrument = i;
-			var label = StringTools.lpad('$instrument', "0", 2);
-			var a = StringTools.rpad('$label' + Micromod.get_string(instrument), " ", 24);
-
-			instrument += 16;
-
-			var b = "";
-			if (instrument <= 0x1f) {
-				var label = StringTools.lpad('$instrument', "0", 2);
-				b = StringTools.rpad('$label' + Micromod.get_string(instrument), " ", 24);
-			}
-
-			var line = writeLine(a + b, "");
+		for (instr in instruments) {
+			var line = writeLine(instr, "");
 			for (n in [0, 1, 24, 25]) {
-				if(n < line.elements.length){
+				if (n < line.elements.length) {
 					line.elements[n].fgColor = theme.textColorB;
 					text.buff.updateElement(line.elements[n]);
 				}
@@ -162,8 +173,6 @@ class Main extends app.App {
 			text.updateText(line);
 		}
 	}
-
-
 
 	function isLHAFile(filename:String):Bool {
 		var segments = filename.split(".");

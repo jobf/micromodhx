@@ -55,19 +55,25 @@ class TextProgram extends Program {
 			if (defaultBmFontData == null) defaultBmFontData = new BMFontData(BMFont.data);
 			fontData = defaultBmFontData;
 		}
-		this.fontData = fontData;
 
 		if (textOptions != null) textOptions.copyNotNullValuesTo(defaultOptions);
 
 		super( #if doc_gen cast #end new Buffer<TextElement>(minBufferSize, growBufferSize) );
+		
+		setFont(fontData);
+		setColorFormula("( base.r > 0.0) ? fgColor : bgColor");
+
+	}
+
+	public function setFont(fontData:BMFontData){
+		this.fontData = fontData;
 
 		var texture = Texture.fromData(fontData.textureData);
 
 		texture.tilesX = fontData.length;
 		texture.tilesY = 1;
 
-		addTexture(texture, "base", false);
-		setColorFormula("( base.r > 0.0) ? fgColor : bgColor");
+		setTexture(texture, "base", true);
 	}
 
 	/**

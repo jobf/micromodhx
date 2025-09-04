@@ -91,5 +91,3 @@ Modules from modarchive seem to be fine however.
 - hxcpp bindings :(
 - unify the API further
 - code cleaning
-- add haxelib.json
-

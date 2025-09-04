@@ -1,5 +1,7 @@
 package app;
 
+import app.Font;
+
 @:structInit
 @:publicFields
 class Theme {
@@ -7,67 +9,42 @@ class Theme {
 	var textColorA:Int = 0xA7AEB4ff;
 	var textColorB:Int = 0x6baa75ff;
 	var buttonColorA:Int = 0x6baa75ff;
-	var buttonColorB:Int = 0xCBFF4Dff; // 0x84dd63ff;
+	var buttonColorB:Int = 0xCBFF4Dff;
+	var font:Array<Int> = halfling;
 }
 
-function chalk():Theme {
-	return {
-		background: 0x1D201Fff,
-		textColorA: 0xD1DEDEff,
-		textColorB: 0xC58882ff,
-		buttonColorA: 0xDF928Eff,
-		buttonColorB: 0xEAD2ACff,
-	}
+var chalk:Theme = {
+	background: 0x1D201Fff,
+	textColorA: 0xD1DEDEff,
+	textColorB: 0xC58882ff,
+	buttonColorA: 0xDF928Eff,
+	buttonColorB: 0xEAD2ACff,
+	font: comic_fans
 }
 
-function suite():Theme {
-	return {
-		background: 0x02040Fff,
-		textColorA: 0xE5DADAff,
-		textColorB: 0x002642ff,
-		buttonColorB: 0x840032ff,
-		buttonColorA: 0xE59500ff,
-	}
+var suite:Theme = {
+	background: 0x02040Fff,
+	textColorA: 0xE5DADAff,
+	textColorB: 0x002642ff,
+	buttonColorB: 0x840032ff,
+	buttonColorA: 0xE59500ff,
+	font: scarlet
 }
 
-function slate():Theme {
-	return {
-		background: 0x1A2323ff, // 0x374B4Aff,
-		textColorA: 0x8B8BAEff,
-		textColorB: 0x526760ff,
-		buttonColorA: 0x88D9E6ff,
-		buttonColorB: 0x88FDF9ff,
-	}
+var slate:Theme = {
+	background: 0x1A2323ff,
+	textColorA: 0x88D9E6ff,
+	textColorB: 0x526760ff,
+	buttonColorA: 0x8B8BAEff,
+	buttonColorB: 0x88D9E6ff,
+	font: around
 }
 
-// function slate():Theme {
-// 	return {
-// 		background: 0x1A2323ff, // 0x374B4Aff,
-// 		textColorA: 0xC5FFFDff,
-// 		textColorB: 0x526760ff,
-// 		buttonColorA: 0x88D9E6ff,
-// 		buttonColorB: 0x8B8BAEff
-// 	}
-// }
-
-function burntice():Theme {
-	return {
-		background: 0xE7E7E7ff,
-		textColorA: 0x485696ff,
-		textColorB: 0xFC7A1Eff,
-		buttonColorA: 0xF9C784ff,
-		buttonColorB: 0xF24C00ff,
-	}
+var iceburn:Theme = {
+	background: 0xE7E7E7ff,
+	textColorA: 0x485696ff,
+	textColorB: 0xFC7A1Eff,
+	buttonColorA: 0xF9C784ff,
+	buttonColorB: 0xF24C00ff,
+	font:computer
 }
-/*
-	function ()
-	{
-	return {
-		background: 0xff,
-		textColorA: 0xff,
-		textColorB: 0xff,
-		buttonColorA: 0xff,
-		buttonColorB: 0xff
-	}
-	}
- */

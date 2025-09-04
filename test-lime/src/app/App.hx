@@ -1,18 +1,18 @@
 package app;
 
-import lime.graphics.RenderContext;
-import app.Theme;//.chalk;
-import peote.view.text.TextElement;
-import peote.view.Color;
-import peote.view.text.Text;
-import peote.view.text.BMFontData;
-import lime.ui.MouseButton;
-import peote.view.Display;
-import peote.view.text.TextProgram;
+import app.Theme;
 import haxe.CallStack;
 import lime.app.Application;
+import lime.graphics.RenderContext;
+import lime.ui.MouseButton;
+import peote.view.Color;
+import peote.view.Display;
 import peote.view.PeoteView;
+import peote.view.text.BMFontData;
+import peote.view.text.Text;
+import peote.view.text.TextElement;
 import peote.view.text.TextOptions;
+import peote.view.text.TextProgram;
 
 abstract class App extends Application {
 	var peoteView:PeoteView;
@@ -42,16 +42,18 @@ abstract class App extends Application {
 		}
 	}
 
+	var themes:Array<Theme> = [
+		suite,
+		chalk,
+		slate,
+		iceburn,
+		{},
+	];
+
 	function init() {
-		theme = {}
-		// theme = chalk();
-		theme = suite();
-		// theme = burntice();
+		theme = themes[themes.length - 1];
 
 		peoteView = new PeoteView(window);
-		var bg = Color.BLUE1;
-
-		bg.valueHSV = 20 / 256;
 
 		display = new Display(0, 0, 800, 450, theme.background);
 		peoteView.addDisplay(display);
@@ -62,7 +64,7 @@ abstract class App extends Application {
 			letterHeight: 16,
 		}
 
-		var font = new BMFontData(Font.halfling);
+		var font = new BMFontData(theme.font);
 		text = new TextProgram(font, textOptions);
 		display.addProgram(text);
 
@@ -73,6 +75,33 @@ abstract class App extends Application {
 
 		start();
 	}
+
+	function clear():Void {
+		yLine = margin;
+		text.buff.clear();
+	}
+
+	function setTheme(theme:Theme){
+		this.theme = theme;
+		text.defaultOptions.fgColor = theme.textColorA;
+		display.color = theme.background;
+		text.setFont(new BMFontData(theme.font));
+	}
+
+	function initThemeChoice() {
+		var x = display.width - themes.length * lineHeight;
+		var y = display.height - lineHeight;
+		for (n => theme in themes) {
+			add_button(String.fromCharCode(n + 1), (text, char) -> {
+				setTheme(theme);
+				clear();
+				initUi();
+			}, x, y, true);
+			x += lineHeight;
+		}
+	}
+
+
 
 	function writeLine(line:String, title:String):Text {
 		// add title
@@ -89,24 +118,28 @@ abstract class App extends Application {
 		return line;
 	}
 
-	function add_button(label:String, action:(text:Text, char:TextElement) -> Void, x:Int, y:Int):Text {
-		// var x = x_ > 0 ? x_ : xButton;
-		// var y = y_ > 0 ? y_ : yButton += space;
-
+	function add_button(label:String, action:(text:Text, char:TextElement) -> Void, x:Int, y:Int, isTransparentBg:Bool=false):Text {
 		var text = new Text(x, y, label, {
 			fgColor: theme.buttonColorA,
-			bgColor: theme.buttonColorB,
+			bgColor: isTransparentBg ? 0x00000000 : theme.buttonColorB,
 		});
 
+		if(!isTransparentBg){
+		}
+		var aOver = isTransparentBg ? 0x00 : 0x8f;
+		var aOut = isTransparentBg ? 0x00 : 0xff;
+		text.onOver = (text:Text, char:TextElement) -> text.changeBgA(aOver);
+		text.onOut = (text:Text, char:TextElement) -> text.changeBgA(aOut);
+
 		text.onAction = action;
-		text.onOver = (text:Text, char:TextElement) -> text.changeBgA(0x8F);
-		text.onOut = (text:Text, char:TextElement) -> text.changeBgA(0xFF);
 
 		return this.text.add(text);
 	}
 
 	abstract function start():Void;
-
+	
+	abstract function initUi():Void;
+	
 	#if (!js)
 		override function render(context:RenderContext):Void
 		{	
