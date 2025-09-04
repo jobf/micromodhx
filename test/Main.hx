@@ -27,7 +27,7 @@ function main() {
 		var oversampling_freq = sampling_frequency * oversample;
 		var module:Bytes = Micromod.read_module(path, length);
 		var result = Micromod.initialise(module, oversampling_freq);
-		if (result == 0) {
+		if (result.length == 0) {
 			print_module_info();
 
 			var samples_remaining:Int = Micromod.calculate_song_duration();
@@ -43,8 +43,8 @@ function main() {
 
 			trace('Mix buffer size $mix_buffer_size');
 			var bits_per_sample = 16;
-			var wav_file = WavFile.from_bytes(mix_buffer, oversampling_freq, num_channels, bits_per_sample);
-			WavFile.write_to_disk(wav_file, "test.wav");
+			var wav_file = audio.WavFile.from_bytes(mix_buffer, oversampling_freq, num_channels, bits_per_sample);
+			audio.WavFile.write_to_disk(wav_file, "test.wav");
 		}
 	}
 }

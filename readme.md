@@ -13,6 +13,8 @@ C and JavaScript alone means lime could use it for background music, for example
 
 It's work in progress, but currently there are bindings for hashlink and javascript with enough functionality to read the mod file, extract instrument names, and render audio samples.
 
+There is also a gui app in the repo for playing back modules in real time.
+
 # test
 
 Clone the source
@@ -21,7 +23,13 @@ Clone the source
 git clone --recursive https://github.com/jobf/micromodhx
 ```
 
-## hashlink
+## test the bindings (render audio to disk)
+
+There are 2 minimal test apps that are meant for asserting that the bindings work on hashlink and JavaScript.
+
+For a complete gui application see the [lime app section](#lime-app-render-audio-to-sound-card).
+
+### hashlink
 
 Currently supports linux with hashlink installed globally.
 
@@ -31,7 +39,7 @@ Run the following. This will compile the hdll and the test hashlink program to `
 haxe test-hl.hxml
 ```
 
-## js
+### js
 
 Currently suports linux with python intalled globally.
 
@@ -41,11 +49,47 @@ Run the following. This will compile the js and the test js program to `bin/js` 
 haxe test-js.hxml
 ```
 
+## lime app (render audio to sound card)
+
+This is a gui application for playing modules and sits on top of lime, so you need that installed, along with some other haxelibs...
+
+```
+# lime
+haxelib install lime
+
+# peote-view
+haxelib install peote-view
+```
+You want to be in the correct path
+
+```
+cd test-lime
+```
+
+Then you can run either with hashlink or in a web browser.
+
+Download some modules from e.g. https://modarchive.org/ or use your own.  Currently micromod appears to only support mod, the s3m and xm claim is apparently false.
+
+```
+# hashlink
+lime test hl
+
+# browser
+lime test html5
+```
+
+### glitches
+
+The modules that are included in the micromod repository are glitchy. I had issues loading them into protracker and they cause the hashlink build of to segfault.
+
+Modules from modarchive seem to be fine however.
+
 # to do
 
-- support windows hashlink build
-- support windows javascript build
-- hxcpp bindings
-- finish binding all functions
+- windows scripts (currently scripts used during compilation only support linux/mac?)
+- make the hashlink test-lime more robust
+- hxcpp bindings :(
+- unify the API further
+- code cleaning
 - add haxelib.json
-- demo lime app supporting native, hl and web
+

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="[mod]play" package="micromod" version="0.1.0" company="v-v" />
+	
+	<android target-sdk-version="28" />
+	
+	<window width="800" height="450" fps="61" allowHighDPI="false" vsync="true" />
+	<window if="html5||android" width="0" height="0" />
+	
+	<app main="Main" path="bin" file="Main" />
+	<!-- <define name="stats" if="html5" /> -->
+	
+	<source path="src" />
+	<haxelib name="lime" />	
+	<haxelib name="peote-view" />
+	<haxelib name="micromod" path="../" />
+	<!-- <haxelib name="format"  /> -->
+	
+	<!-- force compiling for a special opengl-es version (only set one of them) -->
+	<!-- this optimizes the build and forces no-runtimecheck for the gl-features -->
+	<!-- <haxedef name="peoteview_es3" if="html5" /> -->
+
+ 	<!-- android autodetect es3 but did not work, so force to es2 -->
+	<haxedef name="peoteview_es2" if="android" />
+	
+	<!-- use special gl-features for optimization (if supported by opengl-es version) -->
+	<haxedef name="peoteview_uniformbuffers" />
+	<haxedef name="peoteview_instancedrawing" />
+	<haxedef name="peoteview_vertexarrayobjects" />
+
+	<haxeflag name="-dce" value="full" />
+
+	<postbuild cmd="./hashlink" if="hl"/>
+	<postbuild cmd="./html5" if="html5"/>
+	
+</project>

@@ -1,0 +1,4 @@
+# build the hdll
+(cd .. && haxelib run hxcpp buildHdll.xml)
+# copy the hdll to bin
+cp ../hdll/bin/*.hdll bin/hl/bin

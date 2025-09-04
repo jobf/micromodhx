@@ -1,10 +1,10 @@
+import audio.js.AudioPlayer;
 import js.Browser;
 import js.html.XMLHttpRequest;
-import micromod.bindings.js.AudioPlayer;
 import js.lib.Int8Array;
 import micromod.Micromod;
 
-// import TestPlayer to build it into main.js
+// import TestPlayer to bundle it with main.js
 import TestPlayer;
 
 function main() {
@@ -16,23 +16,26 @@ function main() {
 	request.open("GET", url, true);
 	request.responseType = ARRAYBUFFER;
 	request.onloadend = event -> {
-		var data = new Int8Array(request.response);
-		Micromod.initialise(data, player.getSamplingRate());
-		var samples_remaining = Micromod.calculate_song_duration();
 		
-		trace('samples_remaining $samples_remaining');
+		var data = new Int8Array(request.response);
+		var samplerate = Std.int(player.getSamplingRate());
+
+		Micromod.initialise(data, samplerate);
+		
 		print_module_info();
 
 		Browser.window.addEventListener("click", event -> {
-			trace('click !');
-			// to do
-			Micromod.get_audio(player);
+			// Micromod.get_audio(player);
 		});
 	}
+
 	request.send();
 }
 
 function print_module_info():Void {
+	var samples_remaining = Micromod.calculate_song_duration();
+	trace('samples_remaining $samples_remaining');
+
 	for (i in 0...16)
 	{
 		var instrument = i;

@@ -1,3 +1,5 @@
+package audio;
+
 import haxe.io.Bytes;
 import format.wav.Data.WAVE;
 
